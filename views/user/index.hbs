@@ -1,5 +1,33 @@
+{{!-- --}}
+{{#with user}}
 <ul>
-    {{#each pets}}
-    <li>{{id}}</li>
+
+    {{#each user.pets}}
+    <li>
+        <img src={{profile_img}} alt="profile image">
+        <h3>{{name}}</h3>
+        <p>{{species}}</p>
+        <p>Age: {{age}}</p>
+        <p>Gender: {{gender}}</p>
+
+        <form action="/profile/{{_id}}" method="GET">
+            <button type="submit">Details</button>
+        </form>
+
+        <form action="/profile/{{_id}}/edit" method="GET">
+            <button type="submit">Edit</button>
+        </form>
+
+        <form action="/profile/{{_id}}/delete" method="POST">
+            <button type="submit">Delete</button>
+        </form>
+
+    </li>
     {{/each}}
+
 </ul>
+{{/with}}
+
+{{#if errorMessage}}
+{{errorMessage}}
+{{/if}}
