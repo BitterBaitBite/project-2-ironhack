@@ -1,12 +1,13 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+nav {
+	margin-bottom: 30px;
 }
 
-a {
-  color: #00b7ff;
+.hidden {
+	display: none;
 }
 
-h1 {
-  color: 15px;
+/* UTILITIES */
+
+.text-align-center {
+	text-align: center;
 }
