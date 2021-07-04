@@ -14,6 +14,7 @@ const isLoggedIn = require('../middleware/isLoggedIn');
 const loggedUser = require('../utils/loggedUser');
 
 router.get('/signup', isLoggedOut, (req, res) => {
+	const user = req.session.user;
 	res.render('auth/signup', { user: loggedUser(user) });
 });
 

@@ -1,5 +1,22 @@
 {{!-- --}}
+
+
 {{#with user}}
+
+<p>Username:{{user.username}}</p>
+<p>Email:{{user.email}}</p>
+{{#if ../isMod}}
+<p>Role:{{user.role}}</p>
+{{/if}}
+<form action="/profile/edit" method="GET">
+    <button type="submit">Edit</button>
+</form>
+
+<form action="/profile/delete" method="GET">
+    <button type="submit">Delete</button>
+</form>
+
+
 <ul>
 
     {{#each user.pets}}
