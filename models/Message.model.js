@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
 
-const userSchema = new Schema({
+const messageSchema = new Schema({
 	origin: {
 		type: Schema.Types.ObjectId,
 		ref: 'Pet',
@@ -13,7 +13,7 @@ const userSchema = new Schema({
 		required: true,
 	},
 
-	origin: {
+	body: {
 		type: String,
 		required: true,
 	},
@@ -24,6 +24,6 @@ const userSchema = new Schema({
 	},
 });
 
-const User = model('User', userSchema);
+const Message = model('Message', messageSchema);
 
-module.exports = User;
+module.exports = Message;

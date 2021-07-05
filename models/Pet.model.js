@@ -16,9 +16,17 @@ const petSchema = new Schema({
 	},
 
 	address: {
-		type: Schema.Types.ObjectId,
-		ref: 'Address',
-		required: true,
+		street: { type: String, required: true },
+		postal: { type: String, required: true },
+		number: { type: Number, required: true },
+		country: { type: String, required: true, default: 'SPAIN' },
+		city: { type: String, required: true },
+		location: {
+			type: {
+				type: String,
+			},
+			coordinates: [Number],
+		},
 	},
 
 	age: {
@@ -37,21 +45,29 @@ const petSchema = new Schema({
 		default: 'UNDEFINED',
 	},
 
-	reviews: {
-		type: [Schema.Types.ObjectId],
-		ref: 'Review',
-	},
+	reviews: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'Review',
+		},
+	],
 
-	messages: {
-		type: [Schema.Types.ObjectId],
-		ref: 'Message',
-	},
+	messages: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'Message',
+		},
+	],
 
-	friends: {
-		type: [Schema.Types.ObjectId],
-		ref: 'Pet',
-	},
+	friends: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'Pet',
+		},
+	],
 });
+
+petSchema.index({ location: '2dsphere' });
 
 const Pet = model('Pet', petSchema);
 

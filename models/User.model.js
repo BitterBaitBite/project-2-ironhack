@@ -21,11 +21,13 @@ const userSchema = new Schema({
 		// required: true,
 	},
 
-	pets: {
-		type: [Schema.Types.ObjectId],
-		ref: 'Pet',
-		// required: true,
-	},
+	pets: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'Pet',
+			// required: true,
+		},
+	],
 });
 
 const User = model('User', userSchema);

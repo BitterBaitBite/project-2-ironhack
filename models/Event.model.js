@@ -7,11 +7,13 @@ const eventSchema = new Schema({
 		required: true,
 	},
 
-	participants: {
-		type: [Schema.Types.ObjectId],
-		ref: 'Pet',
-		required: true,
-	},
+	participants: [
+		{
+			type: Schema.Types.ObjectId,
+			ref: 'Pet',
+			required: true,
+		},
+	],
 
 	activity: {
 		type: String,
@@ -36,7 +38,7 @@ const eventSchema = new Schema({
 	},
 });
 
-placeSchema.index({ location: '2dsphere' });
+eventSchema.index({ location: '2dsphere' });
 
 const Event = model('Event', eventSchema);
 

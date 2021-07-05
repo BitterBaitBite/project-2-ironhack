@@ -1,6 +1,6 @@
 const { Schema, model } = require('mongoose');
 
-const userSchema = new Schema({
+const reviewSchema = new Schema({
 	origin: {
 		type: Schema.Types.ObjectId,
 		ref: 'Pet',
@@ -13,7 +13,7 @@ const userSchema = new Schema({
 		required: true,
 	},
 
-	origin: {
+	body: {
 		type: String,
 		required: true,
 	},
@@ -31,6 +31,6 @@ const userSchema = new Schema({
 	},
 });
 
-const User = model('User', userSchema);
+const Review = model('Review', reviewSchema);
 
-module.exports = User;
+module.exports = Review;
