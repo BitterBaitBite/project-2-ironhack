@@ -1,0 +1,26 @@
+<div class="container">
+    <div class="row justify-content-center">
+
+        <form class="col-8" action="/pets/{{pet._id}}/contact" method="POST">
+            <div class="mb-3">
+                <label for="destinatary-input" class="form-label">To:</label>
+                <input type="text" class="form-control" id="destinatary-input" aria-describedby="name-input" name="name" value="{{pet.name}}" disabled>
+            </div>
+
+            <div class="mb-3">
+                <label for="body-input" class="form-label">Message</label>
+                <textarea name="body" id="body-input" cols="30" rows="10" class="form-control"></textarea>
+            </div>
+
+
+            <button type="submit" class="btn btn-primary">Send</button>
+
+            {{#if errorMessage}}
+            {{errorMessage}}
+            {{/if}}
+
+        </form>
+
+    </div>
+</div>
+

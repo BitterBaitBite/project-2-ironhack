@@ -1,7 +1,7 @@
 <div class="container">
     <div class="row justify-content-center">
 
-        <div class="col-8">
+        <div class="col-6">
             <h2>Details</h2>
 
             {{#with pet}}
@@ -14,7 +14,7 @@
             <p>Number: {{address.number}}</p>
             <p>Country: {{address.country}}</p>
             <p>City: {{address.city}}</p>
-            
+
             <p>Age: {{age}}</p>
             <p>Gender: {{gender}}</p>
 
@@ -25,6 +25,18 @@
             <form action="/profile/{{_id}}/delete" method="POST">
                 <button type="submit">Delete</button>
             </form>
+
+        </div>
+
+        <div class="col-6">
+            <h2>Centro de mensajes</h2>
+            <ul>{{#each messages}}
+
+                <li>{{_id}}{{body}}</li>
+                
+
+                {{/each}}
+            </ul>
             {{/with}}
 
         </div>

@@ -1,7 +1,7 @@
 <div class="container">
     <div class="row justify-content-center">
 
-        <img class="col-8">
+        <div class="col-6">
             <h2>Details</h2>
 
             {{#with pet}}
@@ -25,7 +25,19 @@
                 <button type="submit">Delete</button>
             </form>
             {{/if}}
-            {{/with}}
+            <form action="/pets/{{_id}}/contact" method="GET">
+                <button type="submit">Contact</button>
+                {{/with}}
+            </form>
+        </div>
+      
+
+
+            {{#if errorMessage}}
+            {{errorMessage}}
+            {{/if}}
+
+
         </div>
     </div>
 </div>

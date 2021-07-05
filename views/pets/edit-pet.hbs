@@ -1,0 +1,75 @@
+{{#with pet}}
+
+{{!-- VALORAR QUÉ PUEDE Y NO EDITAR EL MODERADOR, EN CONTRASTE CON EL ADMIN --}}
+
+<div class="container">
+    <div class="row justify-content-center">
+
+        <form class="col-8" action="/pets/{{id}}/edit" method="POST">
+            <div class="mb-3">
+                <label for="name-input" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name-input" aria-describedby="name-input" name="name"
+                    value="{{name}}">
+            </div>
+
+            <div class="mb-3">
+                <label for="description-input" class="form-label">Description</label>
+                <textarea name="description" id="description-input" cols="30" rows="10"
+                    class="form-control">{{description}}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="species-input" class="form-label">Species</label>
+                <input type="text" class="form-control" id="species-input" name="species" value="{{species}}">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Address
+                    <label class="form-label">Street</label>
+                    <input type="text" class="form-control" id="street-input" name="street" value='{{address.street}}'>
+                    <label class="form-label">Postal</label>
+                    <input type="text" class="form-control" id="postal-input" name="postal" value='{{address.postal}}'>
+                    <label class="form-label">Number</label>
+                    <input type="number" class="form-control" id="number-input" name="number"
+                        value='{{address.number}}'>
+                    <label class="form-label">Country</label>
+                    <input type="text" class="form-control" id="country-input" name="country"
+                        value='{{address.country}}'>
+                    <label class="form-label">City</label>
+                    <input type="text" class="form-control" id="city-input" name="city" value='{{address.city}}'>
+
+
+                </label>
+            </div>
+
+            <div class="mb-3">
+                <label for="age-input" class="form-label">Age</label>
+                <input type="number" class="form-control" id="age-input" name="age" value="{{age}}">
+            </div>
+
+            <div class="mb-3">
+                <label for="gender-input" class="form-label">Gender</label>
+                <select name="gender" id="gender-input" class="form-control">
+                    <option value="UNDEFINED">UNDEFINED</option>
+                    <option value="MALE">MALE</option>
+                    <option value="FEMALE">FEMALE</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="profile-img-input" class="form-label">Profile image</label>
+                <input type="text" class="form-control" id="profile-img-input" name="profile_img"
+                    value="{{profile_img}}">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update</button>
+
+            {{#if ../errorMessage}}
+            {{../errorMessage}}
+            {{/if}}
+
+        </form>
+
+    </div>
+</div>
+{{/with}}
