@@ -4,7 +4,6 @@
 // -   /pets/:id/contact (get, post)
 // -   /pets/:id/edit (get, post)(admin only, moderator for reviews)
 // -   /pets/:id/delete (post)(admin only)
-
 const router = require('express').Router();
 const mongoose = require('mongoose');
 
@@ -15,23 +14,25 @@ const isLoggedIn = require('../middleware/isLoggedIn');
 const loggedUser = require('../utils/loggedUser');
 
 router.get('/', isLoggedIn, (req, res) => {
+	
 	const user = req.session.user;
 	const addressProperties = ['street', 'postal', 'number', 'country', 'city'];
 
 	const queryAddress = Object.keys(req.query).reduce((result, key) => {
-		if (addressProperties.includes(key)) {
+		if (addressProperties.includes(key) && req.query[key] != '') {
 			result[key] = req.query[key];
 		}
 		return result;
+
 	}, {});
 
 	const result = Object.keys(req.query).reduce((result, key) => {
-		if (!addressProperties.includes(key)) {
+		if (!addressProperties.includes(key) && req.query[key] != '') {
 			result[key] = req.query[key];
 		}
 		return result;
 	}, {});
-
+	console.log(result)
 	Pet.find(result)
 		.then((pets) => {
 			const filteredPets = pets.filter((pet) => {
@@ -47,5 +48,23 @@ router.get('/', isLoggedIn, (req, res) => {
 		})
 		.catch((err) => console.error(err));
 });
+
+
+
+router.get('/:id', isLoggedIn, (req, res) => {
+	const currentUser = req.session.user;
+	console.log('hello')
+	const isMod = currentUser.role == 'MODERATOR' || currentUser.role == 'ADMIN';
+
+	const { id } = req.params
+	console.log(id, req.url)
+	Pet
+		.findById(req.params.id)
+		.then((pet) => res.render('pets/pet-details', { pet, user: loggedUser(currentUser), isMod }))
+		.catch(err => console.log(err))
+})
+
+
+
 
 module.exports = router;
