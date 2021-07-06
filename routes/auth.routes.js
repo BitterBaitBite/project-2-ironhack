@@ -11,6 +11,7 @@ const User = require('../models/User.model');
 
 const isLoggedOut = require('../middleware/isLoggedOut');
 const isLoggedIn = require('../middleware/isLoggedIn');
+const errorValidation = require('../utils/errors/errorValidation');
 
 router.get('/signup', isLoggedOut, (req, res) => {
 	res.render('auth/signup');
@@ -30,16 +31,15 @@ router.post('/signup', isLoggedOut, (req, res) => {
 	// }
 
 	//   ! This use case is using a regular expression to control for special characters and min length
-	/*
-  const regex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
 
-  if (!regex.test(password)) {
-    return res.status(400).render("signup", {
-      errorMessage:
-        "Password needs to have at least 8 chars and must contain at least one number, one lowercase and one uppercase letter.",
-    });
-  }
-  */
+	//   const regex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
+
+	//   if (!regex.test(password)) {
+	//     return res.status(400).render("signup", {
+	//       errorMessage:
+	//         "Password needs to have at least 8 chars and must contain at least one number, one lowercase and one uppercase letter.",
+	//     });
+	//   }
 
 	User.findOne({ username }).then((found) => {
 		// If the user is found, send the message username is taken
@@ -63,17 +63,7 @@ router.post('/signup', isLoggedOut, (req, res) => {
 				req.session.user = user;
 				res.redirect('/');
 			})
-			.catch((error) => {
-				if (error instanceof mongoose.Error.ValidationError) {
-					return res.status(400).render('auth/signup', { errorMessage: error.message });
-				}
-				if (error.code === 11000) {
-					return res.status(400).render('auth/signup', {
-						errorMessage: 'The username you chose is already in use.',
-					});
-				}
-				return res.status(500).render('auth/signup', { errorMessage: error.message });
-			});
+			.catch((err) => errorValidation(res, err));
 	});
 });
 
@@ -85,7 +75,7 @@ router.post('/login', isLoggedOut, (req, res, next) => {
 	const { username, password } = req.body;
 
 	if (!username) {
-		return res.status(400).render('auth/login', { errorMessage: 'Please provide your username.' });
+		return res.status(400).render('auth/login', { errorMessage: 'Please provide a username' });
 	}
 
 	// Here we use the same logic as above
@@ -101,32 +91,28 @@ router.post('/login', isLoggedOut, (req, res, next) => {
 		.then((user) => {
 			// If the user isn't found, send the message that user provided wrong credentials
 			if (!user) {
-				return res.status(400).render('auth/login', { errorMessage: 'Wrong credentials.' });
+				return res.status(400).render('auth/login', { errorMessage: 'Wrong username' });
 			}
 
-			// If user is found based on the username, check if the in putted password matches the one saved in the database
+			// If user is found based on the username, check if the input password matches the one saved in the database
 			bcrypt.compare(password, user.password).then((isSamePassword) => {
 				if (!isSamePassword) {
-					return res.status(400).render('auth/login', { errorMessage: 'Wrong credentials.' });
+					return res.status(400).render('auth/login', { errorMessage: 'Wrong password' });
 				}
 				req.session.user = user;
 				// req.session.user = user._id; // ! better and safer but in this case we saving the entire user object
 				return res.redirect('/');
 			});
 		})
-		.catch((err) => {
-			// in this case we are sending the error handling to the error handling middleware that is defined in the error handling file
-			// you can just as easily run the res.status that is commented out below
-			next(err);
-			// return res.status(500).render("login", { errorMessage: err.message });
-		});
+		.catch((err) =>
+			// sending the error to the error handling middleware defined in the error handling file
+			next(err)
+		);
 });
 
 router.get('/logout', isLoggedIn, (req, res) => {
 	req.session.destroy((err) => {
-		if (err) {
-			return res.status(500).render('auth/logout', { errorMessage: err.message });
-		}
+		if (err) return res.status(500).render('auth/logout', { errorMessage: err.message });
 
 		res.redirect('/');
 	});

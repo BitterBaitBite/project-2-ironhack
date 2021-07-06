@@ -1,50 +1,65 @@
 <div class="container">
     <div class="row justify-content-center">
 
-        <div class="col-6">
-            <h2>Details</h2>
+        <div class="col-8 container-fluid">
+            <div class="row g-0 gy-2">
 
-            {{#with pet}}
-            <img src='{{profile_img}}' alt="profile image">
-            <h3>{{name}}</h3>
-            <p>{{description}}</p>
-            <p>{{species}}</p>
-            <p>Street: {{address.street}}</p>
-            <p>Postal: {{address.postal}}</p>
-            <p>Number: {{address.number}}</p>
-            <p>Country: {{address.country}}</p>
-            <p>City: {{address.city}}</p>
+                {{#with pet}}
 
-            <p>Age: {{age}}</p>
-            <p>Gender: {{gender}}</p>
+                <img src='{{profile_img}}' alt="profile image">
 
-            <form action="/profile/{{_id}}/edit" method="GET">
-                <button type="submit">Edit</button>
-            </form>
+                <div class="col-12">
+                    <h2>{{name}}</h2>
 
-            <form action="/profile/{{_id}}/delete" method="POST">
-                <button type="submit">Delete</button>
-            </form>
+                    <label><span>Description</span></label>
+                    <p class="description-block">{{description}}</p>
 
-            <li class="nav-item">
-                <a class="nav-link" href="/events/{{_id}}">Events</a>
-            </li>
+                    <p><strong>Species:</strong> {{species}}</p>
 
-            <li class="nav-item">
-                <a class="nav-link" href="/events/{{_id}}/add">New Event</a>
-            </li>
+                    <label class="address-block full-width margin-bottom-2"><span>Address</span>
+                        <p>Street: {{address.street}}</p>
+                        <p>Postal: {{address.postal}}</p>
+                        <p>Number: {{address.number}}</p>
+                        <p>Country: {{address.country}}</p>
+                        <p>City: {{address.city}}</p>
+                    </label>
 
+                    <p><strong>Age:</strong> {{age}}</p>
+                    <p><strong>Gender:</strong> {{gender}}</p>
+                </div>
+
+                <form action="/events/{{_id}}" method="GET">
+                    <button type="submit" class="btn btn-custom full-width col-12 col-sm-6 col-md-5">Events</button>
+                </form>
+
+                <form action="/events/{{_id}}/add" method="GET">
+                    <button type="submit" class="btn btn-custom full-width col-12 col-sm-6 col-md-5">New Event</button>
+                </form>
+
+                <form action="/profile/{{_id}}/edit" method="GET">
+                    <button type="submit" class="btn btn-custom full-width col-12 col-sm-6 col-md-5">Edit</button>
+                </form>
+
+                <form action="/profile/{{_id}}/delete" method="POST">
+                    <button type="submit" class="btn btn-warning full-width col-12 col-sm-6 col-md-5">Delete</button>
+                </form>
+
+                {{#if ../errorMessage}}
+                <div class="error col-12">{{errorMessage}}</div>
+                {{/if}}
+            </div>
         </div>
 
-        <div class="col-6">
+        <div class="col-4">
             <h2>Centro de mensajes</h2>
-            <ul>{{#each messages}}
-
-                <li>{{_id}}{{body}}</li>
-
-
+            <ul>
+                {{#each messages}}
+                <li>
+                    {{_id}}{{body}}
+                </li>
                 {{/each}}
             </ul>
+
             {{/with}}
 
         </div>

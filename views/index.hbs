@@ -2,15 +2,13 @@
     <div class="row">
 
         <h1>{{title}}</h1>
-        {{#with user}}
         {{#if isLogged}}
-        <p>Welcome {{user.username}}!</p>
-        <a class="btn btn-light col-6" href="/logout">Log out</a>
+        <p>Welcome {{currentUser.username}}!</p>
+        <a class="btn btn-custom col-6" href="/logout">Log out</a>
         {{else}}
-        <a class="btn btn-light col-6" href="/login">Log in</a>
-        <a class="btn btn-light col-6" href="/signup">Sign up</a>
+        <a class="btn btn-custom col-6" href="/login">Log in</a>
+        <a class="btn btn-custom col-6" href="/signup">Sign up</a>
         {{/if}}
-        {{/with}}
 
     </div>
 </div>

@@ -1,7 +1,11 @@
 module.exports = (app) => {
 	app.use((req, res, next) => {
-		if (req.session.user) res.locals.currentUser = req.session.user;
-		// if (req.session.pet)
+		if (req.session.user) {
+			res.locals.currentUser = req.session.user;
+			res.locals.isLogged = true;
+		}
+		if (req.session.pet) res.locals.currentPet = req.session.pet;
+
 		next();
 	});
 	app.use('/', require('./base.routes'));

@@ -4,23 +4,25 @@ const eventSchema = new Schema({
 	creator: {
 		type: Schema.Types.ObjectId,
 		ref: 'Pet',
+		required: true,
 	},
 
 	participants: [
 		{
 			type: Schema.Types.ObjectId,
 			ref: 'Pet',
+			required: true,
 		},
 	],
 
 	activity: {
 		type: String,
-		required: true,
+		required: [true, 'You must especify a name for the activity'],
 	},
 
 	description: {
 		type: String,
-		required: true,
+		required: [true, 'You must specify a description for the event'],
 	},
 
 	location: {
