@@ -3,10 +3,10 @@
 
 {{#with user}}
 
-<p>Username:{{user.username}}</p>
-<p>Email:{{user.email}}</p>
+<p>Username:{{username}}</p>
+<p>Email:{{email}}</p>
 {{#if ../isMod}}
-<p>Role:{{user.role}}</p>
+<p>Role:{{role}}</p>
 {{/if}}
 <form action="/profile/edit" method="GET">
     <button type="submit">Edit</button>
@@ -19,7 +19,7 @@
 
 <ul>
 
-    {{#each user.pets}}
+    {{#each pets}}
     <li>
         <img src={{profile_img}} alt="profile image">
         <h3>{{name}}</h3>

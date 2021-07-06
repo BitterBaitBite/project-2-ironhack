@@ -23,7 +23,7 @@ const projectName = 'project-2-ironhack';
 const capitalized = (string) => string[0].toUpperCase() + string.slice(1).toLowerCase();
 
 app.locals.title = `${capitalized(projectName)}`;
-// app.locals.user = req.session.user.username;
+app.locals.currentUser = undefined;
 
 // 👇 Start handling routes here
 require('./routes/')(app);
