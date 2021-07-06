@@ -32,7 +32,12 @@ const eventSchema = new Schema({
 		coordinates: [Number],
 	},
 
-	date: {
+	creationDate: {
+		type: Date,
+		required: true,
+	},
+
+	eventDate: {
 		type: Date,
 		required: true,
 	},
