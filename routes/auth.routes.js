@@ -11,19 +11,16 @@ const User = require('../models/User.model');
 
 const isLoggedOut = require('../middleware/isLoggedOut');
 const isLoggedIn = require('../middleware/isLoggedIn');
-const loggedUser = require('../utils/loggedUser');
 
 router.get('/signup', isLoggedOut, (req, res) => {
-	const user = req.session.user;
-	res.render('auth/signup', { user: loggedUser(user) });
+	res.render('auth/signup');
 });
 
 router.post('/signup', isLoggedOut, (req, res) => {
-	const user = req.session.user;
 	const { username, password } = req.body;
 
 	if (!username) {
-		return res.status(400).render('auth/signup', { user: loggedUser(user), errorMessage: 'Please provide your username.' });
+		return res.status(400).render('auth/signup', { errorMessage: 'Please provide your username.' });
 	}
 
 	// if (password.length < 8) {
@@ -47,7 +44,7 @@ router.post('/signup', isLoggedOut, (req, res) => {
 	User.findOne({ username }).then((found) => {
 		// If the user is found, send the message username is taken
 		if (found) {
-			return res.status(400).render('auth/signup', { user: loggedUser(user), errorMessage: 'Username already taken.' });
+			return res.status(400).render('auth/signup', { errorMessage: 'Username already taken.' });
 		}
 
 		// if user is not found, create a new user - start with hashing the password
@@ -68,14 +65,14 @@ router.post('/signup', isLoggedOut, (req, res) => {
 			})
 			.catch((error) => {
 				if (error instanceof mongoose.Error.ValidationError) {
-					return res.status(400).render('auth/signup', { user: loggedUser(user), errorMessage: error.message });
+					return res.status(400).render('auth/signup', { errorMessage: error.message });
 				}
 				if (error.code === 11000) {
 					return res.status(400).render('auth/signup', {
 						errorMessage: 'The username you chose is already in use.',
 					});
 				}
-				return res.status(500).render('auth/signup', { user: loggedUser(user), errorMessage: error.message });
+				return res.status(500).render('auth/signup', { errorMessage: error.message });
 			});
 	});
 });
@@ -85,11 +82,10 @@ router.get('/login', isLoggedOut, (req, res) => {
 });
 
 router.post('/login', isLoggedOut, (req, res, next) => {
-	const user = req.session.user;
 	const { username, password } = req.body;
 
 	if (!username) {
-		return res.status(400).render('auth/login', { user: loggedUser(user), errorMessage: 'Please provide your username.' });
+		return res.status(400).render('auth/login', { errorMessage: 'Please provide your username.' });
 	}
 
 	// Here we use the same logic as above
@@ -105,20 +101,19 @@ router.post('/login', isLoggedOut, (req, res, next) => {
 		.then((user) => {
 			// If the user isn't found, send the message that user provided wrong credentials
 			if (!user) {
-				return res.status(400).render('auth/login', { user: loggedUser(user), errorMessage: 'Wrong credentials.' });
+				return res.status(400).render('auth/login', { errorMessage: 'Wrong credentials.' });
 			}
 
 			// If user is found based on the username, check if the in putted password matches the one saved in the database
 			bcrypt.compare(password, user.password).then((isSamePassword) => {
 				if (!isSamePassword) {
-					return res.status(400).render('auth/login', { user: loggedUser(user), errorMessage: 'Wrong credentials.' });
+					return res.status(400).render('auth/login', { errorMessage: 'Wrong credentials.' });
 				}
 				req.session.user = user;
 				// req.session.user = user._id; // ! better and safer but in this case we saving the entire user object
 				return res.redirect('/');
 			});
 		})
-
 		.catch((err) => {
 			// in this case we are sending the error handling to the error handling middleware that is defined in the error handling file
 			// you can just as easily run the res.status that is commented out below
@@ -128,11 +123,9 @@ router.post('/login', isLoggedOut, (req, res, next) => {
 });
 
 router.get('/logout', isLoggedIn, (req, res) => {
-	const user = req.session.user;
-
 	req.session.destroy((err) => {
 		if (err) {
-			return res.status(500).render('auth/logout', { user: loggedUser(user), errorMessage: err.message });
+			return res.status(500).render('auth/logout', { errorMessage: err.message });
 		}
 
 		res.redirect('/');

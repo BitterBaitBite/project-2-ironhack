@@ -16,8 +16,7 @@
 
    <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <div class="container-fluid">
-         <a class="navbar-brand" href="/">Navbar {{user}}{{#with user}}{{#if
-            isLogged}}{{user.username}}{{/if}}{{/with}}</a>
+         <a class="navbar-brand" href="/">Navbar {{currentUser.username}}</a>
          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -37,15 +36,15 @@
 
                   <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                      {{#with user}}
-                     {{#unless isLogged}}
+                     {{!-- {{#unless isLogged}} --}}
                      <li class="nav-link-logged"><a class="dropdown-item" href="/login">Log in</a></li>
                      <li class="nav-link-logged"><a class="dropdown-item" href="/signup">Sign up</a></li>
                      <li>
                         <hr class="dropdown-divider">
                      </li>
-                     {{else}}
+                     {{!-- {{else}} --}}
                      <li><a class="dropdown-item" href="/logout">Log out</a></li>
-                     {{/unless}}
+                     {{!-- {{/unless}} --}}
                      {{/with}}
                   </ul>
 

@@ -8,30 +8,19 @@
 // -   /events/:id/quit (owner only)(option to multipet join)
 
 const router = require('express').Router();
-const mongoose = require('mongoose');
 
-const session = require('express-session');
-const Pet = require('../models/Pet.model');
-const User = require('../models/User.model');
 const Event = require('../models/Event.model');
 const isLoggedIn = require('../middleware/isLoggedIn');
-const loggedUser = require('../utils/loggedUser');
-const roleCheck = require('../middleware/roleCheck');
-const Message = require('../models/Message.model');
 
 router.get('/:pet_id', isLoggedIn, (req, res) => {
-	const sessionUser = req.session.user;
-
 	Event.find()
 		.then((events) => {
-			res.render('events/', { events, user: loggedUser(sessionUser), pet_id: req.params.pet_id });
+			res.render('events/', { events, pet_id: req.params.pet_id });
 		})
 		.catch((err) => console.log(err));
 });
 
 router.get('/:pet_id/add', isLoggedIn, (req, res) => {
-	const sessionUser = req.session.user;
-
 	// REVISAR ZONA HORARIA Y FORMATO
 	const date = new Date(Date.now()).toISOString().split('T')[0];
 	const time = new Date(Date.now()).toISOString().split('T')[1].split(':').splice(0, 2).join(':');
@@ -39,12 +28,10 @@ router.get('/:pet_id/add', isLoggedIn, (req, res) => {
 	// const time = temp[1];
 	// const date = temp[0];
 
-	res.render('events/new-event', { user: loggedUser(sessionUser), date, time, pet_id: req.params.pet_id });
+	res.render('events/new-event', { date, time, pet_id: req.params.pet_id });
 });
 
 router.post('/:pet_id/add', isLoggedIn, (req, res) => {
-	const sessionUser = req.session.user;
-
 	const { eventDate: date, eventTime: time, activity, description, latitude, longitude } = req.body;
 
 	const eventFullDate = [date, time].join('T');
@@ -66,7 +53,6 @@ router.post('/:pet_id/add', isLoggedIn, (req, res) => {
 });
 
 router.get('/:pet_id/details/:event_id', isLoggedIn, (req, res) => {
-	const sessionUser = req.session.user;
 	const { pet_id, event_id } = req.params;
 
 	Event.findById(event_id)
@@ -74,13 +60,12 @@ router.get('/:pet_id/details/:event_id', isLoggedIn, (req, res) => {
 		.populate('participants')
 		.then((event) => {
 			const isEnroled = event.participants.some((pet) => pet._id == pet_id);
-			res.render('events/event-details', { user: loggedUser(sessionUser), event, isEnroled, pet_id, event_id });
+			res.render('events/event-details', { event, isEnroled, pet_id, event_id });
 		})
 		.catch((err) => console.error(err));
 });
 
 router.post('/:pet_id/details/:event_id/join', isLoggedIn, (req, res) => {
-	const sessionUser = req.session.user;
 	const { pet_id, event_id } = req.params;
 
 	Event.findById(event_id)
@@ -103,7 +88,6 @@ router.post('/:pet_id/details/:event_id/join', isLoggedIn, (req, res) => {
 });
 
 router.post('/:pet_id/details/:event_id/quit', isLoggedIn, (req, res) => {
-	const sessionUser = req.session.user;
 	const { pet_id, event_id } = req.params;
 
 	Event.findById(req.params.event_id)

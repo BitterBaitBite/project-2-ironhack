@@ -7,16 +7,12 @@
 const router = require('express').Router();
 const mongoose = require('mongoose');
 
-const session = require('express-session');
 const Pet = require('../models/Pet.model');
-const User = require('../models/User.model');
 const isLoggedIn = require('../middleware/isLoggedIn');
-const loggedUser = require('../utils/loggedUser');
 const roleCheck = require('../middleware/roleCheck');
 const Message = require('../models/Message.model');
 
 router.get('/', isLoggedIn, (req, res) => {
-	const user = req.session.user;
 	const addressProperties = ['street', 'postal', 'number', 'country', 'city'];
 
 	const queryAddress = Object.keys(req.query).reduce((result, key) => {
@@ -32,7 +28,7 @@ router.get('/', isLoggedIn, (req, res) => {
 		}
 		return result;
 	}, {});
-	// console.log(result)
+
 	Pet.find(result)
 		.then((pets) => {
 			const filteredPets = pets.filter((pet) => {
@@ -44,43 +40,38 @@ router.get('/', isLoggedIn, (req, res) => {
 				}, true);
 			});
 
-			res.render('pets/', { user: loggedUser(user), pets: filteredPets });
+			res.render('pets/', { pets: filteredPets });
 		})
 		.catch((err) => console.error(err));
 });
 
 router.get('/:id', isLoggedIn, (req, res) => {
-	const currentUser = req.session.user;
 	console.log('hello');
-	const isMod = currentUser.role == 'MODERATOR' || currentUser.role == 'ADMIN';
+	const isMod = req.session.user.role == 'MODERATOR' || req.session.user.role == 'ADMIN';
 
 	const { id } = req.params;
 	console.log(id, req.url);
 	Pet.findById(req.params.id)
-		.then((pet) => res.render('pets/pet-details', { pet, user: loggedUser(currentUser), isMod }))
+		.then((pet) => res.render('pets/pet-details', { pet, isMod }))
 		.catch((err) => console.log(err));
 });
 
 router.get('/:id/edit', isLoggedIn, roleCheck, (req, res) => {
-	const currentUser = req.session.user;
 	const { id } = req.params;
 
 	Pet.findById(id)
-		.then((pet) => res.render('pets/edit-pet', { pet, user: loggedUser(currentUser) }))
+		.then((pet) => res.render('pets/edit-pet', { pet }))
 		.catch((err) => console.log(err));
 });
 
 router.post('/:id/edit', isLoggedIn, roleCheck('ADMIN', 'MODERATOR'), (req, res) => {
-	const user = req.session.user;
-
-	const { name, description, species, age, gender, profile_img } = req.body;
-	const { street, postal, number, country, city } = req.body;
+	const { name, description, species, age, gender, profile_img, street, postal, number, country, city } = req.body;
 	const address = { street, postal, number, country, city };
 
 	Pet.findById(req.params.id)
 		.then((pet) => {
 			// if (!user.pets.includes(String(pet._id))) {
-			// 	res.status(401).render(`pets/pet-details`, { user: loggedUser(user), errorMessage: 'Not authorized for that pet' });
+			// 	res.status(401).render(`pets/pet-details`, {  errorMessage: 'Not authorized for that pet' });
 			// 	return;
 			// }
 
@@ -90,14 +81,14 @@ router.post('/:id/edit', isLoggedIn, roleCheck('ADMIN', 'MODERATOR'), (req, res)
 
 		.catch((error) => {
 			if (error instanceof mongoose.Error.ValidationError) {
-				return res.status(400).render(`pets/pet-details}`, { user: loggedUser(user), errorMessage: error.message });
+				return res.status(400).render(`pets/pet-details}`, { errorMessage: error.message });
 			}
 			if (error.code === 11000) {
 				return res.status(400).render(`pets/pet-details}`, {
 					errorMessage: error.message,
 				});
 			}
-			return res.status(500).render(`pets/pet-details}`, { user: loggedUser(user), errorMessage: error.message });
+			return res.status(500).render(`pets/pet-details}`, { errorMessage: error.message });
 		});
 });
 
@@ -110,20 +101,19 @@ router.post('/:id/delete', isLoggedIn, roleCheck('ADMIN'), (req, res) => {
 });
 
 router.get('/:id/contact', isLoggedIn, (req, res) => {
-	const user = req.session.user;
 	const { id } = req.params;
 
 	Pet.findById(id)
-		.then((pet) => res.render('pets/contact-pet', { user: loggedUser(user), pet }))
+		.then((pet) => res.render('pets/contact-pet', { pet }))
 		.catch((err) => console.log(err));
 });
 
 router.post('/:id/contact', isLoggedIn, (req, res) => {
-	const user = req.session.user;
 	const { body } = req.body;
 	const { id } = req.params;
 
-	Message.create({ origin: user._id, destinatary: id, body, date: Date.now() }).then((message) => {
+	// BUG - El origin está metiendo al usuario
+	Message.create({ origin: req.session.user._id, destinatary: id, body, date: Date.now() }).then((message) => {
 		//SI ESTO NOS DA ALGÚN PROBLEMA FUTURO, TENEMOS DEBAJO LA OTRA OPCIÓN (POR MODIFICAR)
 		Pet.findById(id)
 			.then((pet) => {
@@ -131,7 +121,7 @@ router.post('/:id/contact', isLoggedIn, (req, res) => {
 				return pet.save();
 			})
 			.then((pet) => {
-				res.render('pets/pet-details', { user: loggedUser(user), pet });
+				res.render('pets/pet-details', { pet });
 			})
 			.catch((err) => console.log(err));
 

@@ -4,8 +4,8 @@ const router = require('express').Router();
 
 /* GET home page */
 router.get('/', (req, res, next) => {
-	const user = req.session.user;
-	res.render('', { user: loggedUser(user) });
+	const sessionUser = req.session.user;
+	res.render('', { user: loggedUser(sessionUser) });
 });
 
 module.exports = router;
