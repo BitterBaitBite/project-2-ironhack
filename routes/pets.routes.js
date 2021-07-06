@@ -46,10 +46,6 @@ router.get('/', isLoggedIn, (req, res) => {
 });
 
 router.get('/:id', isLoggedIn, (req, res) => {
-<<<<<<< HEAD
-=======
-	console.log('hello');
->>>>>>> guille
 	const isMod = req.session.user.role == 'MODERATOR' || req.session.user.role == 'ADMIN';
 
 	const { id } = req.params;
@@ -115,10 +111,7 @@ router.post('/:id/contact', isLoggedIn, (req, res) => {
 	const { body } = req.body;
 	const { id } = req.params;
 
-<<<<<<< HEAD
-=======
 	// BUG - El origin está metiendo al usuario
->>>>>>> guille
 	Message.create({ origin: req.session.user._id, destinatary: id, body, date: Date.now() }).then((message) => {
 		//SI ESTO NOS DA ALGÚN PROBLEMA FUTURO, TENEMOS DEBAJO LA OTRA OPCIÓN (POR MODIFICAR)
 		Pet.findById(id)
