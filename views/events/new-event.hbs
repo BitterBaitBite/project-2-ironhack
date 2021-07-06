@@ -3,11 +3,17 @@
 
         <form class="col-8" action="/events/new-event" method="POST">
 
-            {{#with event}}
+            
             <div class="mb-3">
                 <label for="date-input" class="form-label">Date</label>
                 <input type="date" class="form-control" id="date-input" aria-describedby="date-input" name="eventDate"
-                    value="{{eventDate}}">
+                    value="{{date}}">
+            </div>
+            
+            <div class="mb-3">
+                <label for="time-input" class="form-label">Time</label>
+                <input type="time" class="form-control" id="time-input" aria-describedby="time-input" name="eventTime"
+                    value="{{time}}">
             </div>
 
             <div class="mb-3">
@@ -31,7 +37,7 @@
             {{!-- Google Maps API script --}}
             {{!-- <div id="places-list-map"></div> --}}
 
-            {{/with}}
+           
 
             <button type="submit" class="btn btn-primary">Add event</button>
 

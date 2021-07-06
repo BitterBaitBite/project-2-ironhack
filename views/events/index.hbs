@@ -3,8 +3,9 @@
     <div class="row justify-content-center">
 
         <div class='col-8'>
+            <h1>Events:</h1>
             <ul>
-                {{#each this.events}}
+                {{#each events}}
                 <li>
                     <h2>Event: {{activity}}</h2>
                     <p>Description: {{description}}</p>
@@ -17,23 +18,19 @@
         </div>
 
         {{!-- Formulario de busqueda --}}
-        <form class="col-4" action="/events" method="GET">
+        {{!-- <form class="col-4" action="/events" method="GET">
             <div class="mb-3">
                 <label for="activity-input" class="form-label">Activity:</label>
                 <input type="text" class="form-control" id="activity-input" aria-describedby="activity-input" name="activity">
             </div>
 
-            {{!-- Pet model¿? --}}
+
             <div class="mb-3">
                 <label class="mr-sm-2 sr-only" for="creator-input">Creator</label> 
                 <select class="custom-select mr-sm-2" id="creator-input" name="creator">
-                    {{!-- <option selected>press and hold Ctrl for multiple sellection...</option> --}}
                     {{#each pets}}
                         <option value="{{_id}}">{{name}}</option>
                     {{/each}}
-                    {{!-- <option value="60d76477c5b1c935187cf47b">One</option>
-                    <option value="60d764bf4cda7b444c6a8b4d">Two</option>
-                    <option value="60d764f24cda7b444c6a8b52">Three</option> --}}
                 </select>
             </div>
 
@@ -41,7 +38,6 @@
                 <label class="mr-sm-2 sr-only" for="participants-input">Participants</label>
                 <p>Cast: <em class="text-muted">(press and hold Ctrl for multiple sellection...)</em></p>
                 <select class="custom-select mr-sm-2" id="participants-input" name="participants" multiple>
-                    {{!-- <option selected>press and hold Ctrl for multiple sellection...</option> --}}
                     {{#each pets}}
                         <option value="{{_id}}">{{name}}</option>
                     {{/each}}
@@ -65,7 +61,7 @@
             {{errorMessage}}
             {{/if}}
 
-        </form>
+        </form> --}}
 
     </div>
 </div>
