@@ -1,0 +1,49 @@
+
+
+<div class="container">
+    <div class="row justify-content-center">
+
+        <form class="col-8" action="/events/{{id}}/" method="GET">
+            <div class="mb-3">
+                <label for="creator-input" class="form-label">Organized by::</label>
+                <input type="text" class="form-control" id="creator-input" aria-describedby="name-input" name="creator"
+                    value="{{pet.name}}" disabled>
+            </div>
+
+            <div class="mb-3">
+                <label for="participants-input" class="form-label">Participants:</label>
+
+                <ul>{{#each participants}}
+
+                    <li>{{name}}, a {{age}} year old {{species}}.</li>
+
+                    {{/each}}
+
+                </ul>"" disabled>
+
+            </div>
+            {{!-- HABRIA QUE DIFERENCIAR AQUÍ ACTIVITY DE DESCRIPTION NO? --}}
+            <div class="mb-3">
+                <label for="activity" for="description" class="form-label">Activity: {{activity}}</label>
+
+                <textarea name="activity, description" id="activity, description" cols="30" rows="10"
+                    class="form-control" disabled>
+                    {{description}}</textarea>
+            </div>
+
+            <div class="mb3">
+                <label for="location" class="form-label">Location: {{location}}</label>
+                {{!-- <map></map>??? --}}
+            </div>
+
+
+            <button type="submit" class="btn btn-primary">Join</button>
+
+            {{#if errorMessage}}
+            {{errorMessage}}
+            {{/if}}
+
+        </form>
+
+    </div>
+</div>
