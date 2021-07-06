@@ -1,23 +1,28 @@
 <div class="container">
    <div class="row justify-content-center">
 
-      <form class="col-8" action="/signup" method="POST">
-         <div class="mb-3">
-            <label for="username-input" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username-input" aria-describedby="username-input"
-               name="username">
+      <form class="col-6 container-fluid" action="/signup" method="POST">
+
+         <div class="row g-0">
+
+            <div class="mb-3 col-12">
+               <label for="username-input" class="form-label">Username</label>
+               <input type="text" class="form-control" id="username-input" aria-describedby="username-input"
+                  name="username">
+            </div>
+
+            <div class="mb-3 col-12">
+               <label for="password-input" class="form-label">Password</label>
+               <input type="password" class="form-control" id="password-input" name="password">
+            </div>
+
+            <button type="submit" class="btn btn-custom col-12">Sign up</button>
+
+            {{#if errorMessage}}
+            <div class="error col-12">{{errorMessage}}</div>
+            {{/if}}
+
          </div>
-
-         <div class="mb-3">
-            <label for="password-input" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password-input" name="password">
-         </div>
-
-         <button type="submit" class="btn btn-primary">Submit</button>
-
-         {{#if errorMessage}}
-         {{errorMessage}}
-         {{/if}}
 
       </form>
 

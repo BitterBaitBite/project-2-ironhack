@@ -16,6 +16,8 @@ const saltRounds = 10;
 const Pet = require('../models/Pet.model');
 const User = require('../models/User.model');
 const isLoggedIn = require('../middleware/isLoggedIn');
+const errorValidation = require('../utils/errors/errorValidation');
+const hasPet = require('../utils/hasPet');
 
 router.get('/', isLoggedIn, (req, res) => {
 	const sessionUser = req.session.user;
@@ -30,17 +32,7 @@ router.get('/', isLoggedIn, (req, res) => {
 				isMod,
 			});
 		})
-		.catch((error) => {
-			if (error instanceof mongoose.Error.ValidationError) {
-				return res.status(400).render('user', { errorMessage: error.message });
-			}
-			if (error.code === 11000) {
-				return res.status(400).render('user', {
-					errorMessage: 'The username you chose is already in use.',
-				});
-			}
-			return res.status(500).render('user', { errorMessage: error.message });
-		});
+		.catch((err) => errorValidation(res, err));
 });
 
 router.get('/new-pet', isLoggedIn, (req, res) => {
@@ -54,37 +46,27 @@ router.post('/new-pet', isLoggedIn, (req, res) => {
 	const address = { street, postal, number, country, city };
 
 	if (!name) {
-		return res.status(400).render('user/new-pet', { errorMessage: 'Please provide a name.' });
+		return res.status(400).render('user/new-pet', { errorMessage: 'Please provide a name for the pet' });
 	}
 
 	Pet.find({ name })
 		.then((foundPets) => {
+			let exists = false;
 			foundPets.forEach((pet) => {
-				if (sessionUser.pets.includes(pet._id)) {
-					return res.status(400).render('user/new-pet', { errorMessage: 'You have already a pet with that name.' });
+				exists = exists || hasPet(sessionUser, pet._id);
+				if (exists) {
+					return;
 				}
 			});
-			return Pet.create({ name, description, species, address, age, gender, profile_img });
+			if (exists) return res.status(400).render('user/new-pet', { errorMessage: 'You have already a pet with that name' });
+			else return Pet.create({ name, description, species, address, age, gender, profile_img });
 		})
-		.then((pet) => {
-			return User.findById(sessionUser._id).then((user) => {
-				const pets = [...user.pets];
-				pets.push(pet._id);
-				user.pets.push(pet._id);
-				req.session.user = user;
-				return User.findByIdAndUpdate(user._id, { pets });
-			});
+		.then((pet) => User.findByIdAndUpdate(sessionUser._id, { $push: { pets: pet._id } }, { new: true }))
+		.then((user) => {
+			req.session.user = user;
+			res.redirect('/profile');
 		})
-		.then(() => res.redirect('/profile'))
-		.catch((error) => {
-			if (error instanceof mongoose.Error.ValidationError) {
-				return res.status(400).render('user/new-pet', { errorMessage: error.message });
-			}
-			if (error.code === 11000) {
-				return res.status(400).render('user/new-pet', { errorMessage: 'The username you chose is already in use.' });
-			}
-			return res.status(500).render('user/new-pet', { errorMessage: error.message });
-		});
+		.catch((err) => errorValidation(res, err));
 });
 
 // User Profile Edit
@@ -141,15 +123,7 @@ router.post('/edit', isLoggedIn, (req, res) => {
 				req.session.user = user;
 				res.redirect('/profile');
 			})
-			.catch((error) => {
-				if (error instanceof mongoose.Error.ValidationError) {
-					return res.status(400).render('user/', { errorMessage: error.message });
-				}
-				if (error.code === 11000) {
-					return res.status(400).render('user/', { errorMessage: 'The username you chose is already in use.' });
-				}
-				return res.status(500).render('user/', { errorMessage: error.message });
-			});
+			.catch((err) => errorValidation(res, err));
 	});
 });
 
@@ -173,114 +147,70 @@ router.post('/delete', isLoggedIn, (req, res) => {
 		.then((pets, user) => console.log(pets, user))
 		.then(() =>
 			req.session.destroy((err) => {
-				if (err) {
-					return res.status(500).render('user/', { errorMessage: err.message });
-				}
+				if (err) return res.status(500).render('user/', { errorMessage: err.message });
 
 				res.redirect('/');
 			})
-		);
+		)
+		.catch((err) => errorValidation(res, err));
 });
 
 router.get('/:id', isLoggedIn, (req, res) => {
 	const id = req.params.id;
 
-	User.findById(req.session.user._id)
-		.then((user) => {
-			return Pet.findById(id).then((pet) => {
-				if (!user.pets.includes(String(pet._id))) {
-					res.status(401).render('user/', { errorMessage: 'Not authorized for that pet' });
-					return;
-				}
+	if (!hasPet(req.session.user, req.params.id)) {
+		res.status(401).render('user/', { errorMessage: 'Not authorized for that pet' });
+		return;
+	}
 
-				res.status(200).render('user/pet-details', { pet });
-			});
-		})
-		.catch((error) => {
-			if (error instanceof mongoose.Error.ValidationError) {
-				return res.status(400).render('user/', { errorMessage: error.message });
-			}
-
-			if (error instanceof mongoose.Error.ValidationError) {
-				res.status(401).render('user/', { errorMessage: 'Not authorized for that pet' });
-			}
-
-			if (error.code === 11000) {
-				return res.status(400).render('user/', { errorMessage: 'The username you chose is already in use.' });
-			}
-			return res.status(500).render('user/new-pet', { errorMessage: error.message });
-		});
+	Pet.findById(id)
+		.then((pet) => res.status(200).render('user/pet-details', { pet }))
+		.catch((err) => errorValidation(res, err));
 });
 
 router.get('/:id/edit', isLoggedIn, (req, res) => {
+	if (!hasPet(req.session.user, req.params.id)) {
+		res.status(401).render('user/', { errorMessage: 'Not authorized for that pet' });
+		return;
+	}
+
 	Pet.findById(req.params.id)
 		.then((pet) => {
-			if (!req.session.user.pets.includes(String(pet._id))) {
-				res.status(401).render('user/', { errorMessage: 'Not authorized for that pet' });
-				return;
-			}
-
 			res.status(200).render('user/edit-pet', { pet });
 		})
-		.catch((error) => {
-			if (error instanceof mongoose.Error.ValidationError) {
-				return res.status(400).render('user/', { errorMessage: error.message });
-			}
-			if (error.code === 11000) {
-				return res.status(400).render('user/', { errorMessage: error.message });
-			}
-			return res.status(500).render('user/', { errorMessage: error.message });
-		});
+		.catch((err) => errorValidation(res, err));
 });
 
 router.post('/:id/edit', isLoggedIn, (req, res) => {
 	const { name, description, species, age, gender, profile_img, street, postal, number, country, city } = req.body;
 	const address = { street, postal, number, country, city };
 
-	Pet.findById(req.params.id)
-		.then((pet) => {
-			if (!req.session.user.pets.includes(String(pet._id))) {
-				res.status(401).render('user/', { errorMessage: 'Not authorized for that pet' });
-				return;
-			}
+	if (!hasPet(req.session.user, req.params.id)) {
+		res.status(401).render('user/', { errorMessage: 'Not authorized for that pet' });
+		return;
+	}
 
-			return Pet.findByIdAndUpdate(req.params.id, { name, description, species, address, age, gender, profile_img });
-		})
+	Pet.findByIdAndUpdate(req.params.id, { name, description, species, age, gender, profile_img, address })
 		.then(() => res.status(200).redirect('/profile'))
-		.catch((error) => {
-			if (error instanceof mongoose.Error.ValidationError) {
-				return res.status(400).render('user/', { errorMessage: error.message });
-			}
-			if (error.code === 11000) {
-				return res.status(400).render('user/', { errorMessage: error.message });
-			}
-			return res.status(500).render('user/', { errorMessage: error.message });
-		});
+		.catch((err) => errorValidation(res, err));
 });
 
 // Mirar promiseAll
 router.post('/:id/delete', isLoggedIn, (req, res) => {
 	const id = req.params.id;
 
-	User.findById(req.session.user._id)
+	if (!hasPet(req.session.user, id)) {
+		res.status(401).render('user/', { errorMessage: 'Not authorized for that pet' });
+		return;
+	}
+
+	User.findByIdAndUpdate(req.session.user._id, { $pull: { pets: id } }, { new: true })
 		.then((user) => {
-			user.pets.splice(user.pets.indexOf(id), 1);
 			req.session.user = user;
-			return User.findByIdAndUpdate(user._id, { pets: user.pets });
+			return Pet.findByIdAndDelete(id);
 		})
-		.then(() => Pet.findByIdAndDelete(id))
 		.then(() => res.status(200).redirect('/profile'))
-		.catch((error) => {
-			if (error instanceof mongoose.Error.ValidationError) {
-				return res.status(400).render('user/', { errorMessage: error.message });
-			}
-			if (error.code === 11000) {
-				return res.status(400).render('user/', {
-					errorMessage: error.message,
-				});
-			}
-			return res.status(500).render('user/', { errorMessage: error.message });
-		});
+		.catch((err) => errorValidation(res, err));
 });
 
 module.exports = router;

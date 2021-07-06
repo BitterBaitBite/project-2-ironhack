@@ -11,13 +11,14 @@ const router = require('express').Router();
 
 const Event = require('../models/Event.model');
 const isLoggedIn = require('../middleware/isLoggedIn');
+const errorValidation = require('../utils/errors/errorValidation');
 
 router.get('/:pet_id', isLoggedIn, (req, res) => {
 	Event.find()
 		.then((events) => {
 			res.render('events/', { events, pet_id: req.params.pet_id });
 		})
-		.catch((err) => console.log(err));
+		.catch((err) => errorValidation(res, err));
 });
 
 router.get('/:pet_id/add', isLoggedIn, (req, res) => {
@@ -49,7 +50,7 @@ router.post('/:pet_id/add', isLoggedIn, (req, res) => {
 		},
 	})
 		.then((event) => res.redirect('/events'))
-		.catch((err) => console.error(err));
+		.catch((err) => errorValidation(res, err));
 });
 
 router.get('/:pet_id/details/:event_id', isLoggedIn, (req, res) => {
@@ -62,7 +63,7 @@ router.get('/:pet_id/details/:event_id', isLoggedIn, (req, res) => {
 			const isEnroled = event.participants.some((pet) => pet._id == pet_id);
 			res.render('events/event-details', { event, isEnroled, pet_id, event_id });
 		})
-		.catch((err) => console.error(err));
+		.catch((err) => errorValidation(res, err));
 });
 
 router.post('/:pet_id/details/:event_id/join', isLoggedIn, (req, res) => {
@@ -84,7 +85,7 @@ router.post('/:pet_id/details/:event_id/join', isLoggedIn, (req, res) => {
 			return Event.findByIdAndUpdate(event_id, { participants: [...arr] }, { new: true });
 		})
 		.then((event) => res.redirect(`/events/${pet_id}/details/${event_id}`))
-		.catch((err) => console.error(err));
+		.catch((err) => errorValidation(res, err));
 });
 
 router.post('/:pet_id/details/:event_id/quit', isLoggedIn, (req, res) => {
@@ -105,8 +106,8 @@ router.post('/:pet_id/details/:event_id/quit', isLoggedIn, (req, res) => {
 			arr.splice(arr.indexOf(pet_id), 1);
 			return Event.findByIdAndUpdate(event_id, { participants: [...arr] }, { new: true });
 		})
-		.then((event) => res.redirect(`/events/${pet_id}/details/${event_id}`))
-		.catch((err) => console.error(err));
+		.then(() => res.redirect(`/events/${pet_id}/details/${event_id}`))
+		.catch((err) => errorValidation(res, err));
 });
 
 module.exports = router;

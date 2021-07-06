@@ -1,43 +1,52 @@
 <div class="container">
     <div class="row justify-content-center">
 
-        <div class="col-6">
-            <h2>Details</h2>
+        <div class="col-6 container-fluid">
+            <div class="row g-0">
 
-            {{#with pet}}
-            {{!-- <img src='{{profile_img}}' alt="profile image"> --}}
-            <h3>{{name}}</h3>
-            <p>{{description}}</p>
-            <p>{{species}}</p>
+                {{#with pet}}
 
-            <p>Country: {{address.country}}</p>
-            <p>City: {{address.city}}</p>
+                <img src='{{profile_img}}' alt="profile image" class="col-12">
 
-            <p>Age: {{age}}</p>
-            <p>Gender: {{gender}}</p>
+                <div class="col-12">
+                    <h2>{{name}}</h2>
 
-            {{#if ../isMod}}
-            <form action="/pets/{{_id}}/edit" method="GET">
-                <button type="submit">Edit</button>
-            </form>
+                    <label><span>Description</span></label>
+                    <p class="description-block">{{description}}</p>
 
-            <form action="/pets/{{_id}}/delete" method="POST">
-                <button type="submit">Delete</button>
-            </form>
-            {{/if}}
-            <form action="/pets/{{_id}}/contact" method="GET">
-                <button type="submit">Contact</button>
+                    <p>Species: {{species}}</p>
+
+                    <label class="address-block"><span>Address</span>
+                        <p>Country: {{address.country}}</p>
+                        <p>City: {{address.city}}</p>
+                    </label>
+
+                    <p>Age: {{age}}</p>
+                    <p>Gender: {{gender}}</p>
+                </div>
+
+                <form action="/pets/{{_id}}/contact" method="GET">
+                    <button type="submit" class="btn btn-custom full-width col-12">Contact</button>
+                </form>
+
+                {{#if ../isMod}}
+                <form action="/pets/{{_id}}/edit" method="GET">
+                    <button type="submit" class="btn btn-custom full-width col-12 col-sm-6 col-md-4">Edit</button>
+                </form>
+
+                <form action="/pets/{{_id}}/delete" method="POST">
+                    <button type="submit" class="btn btn-warning full-width col-12 col-sm-6 col-md-5">Delete</button>
+                </form>
+                {{/if}}
+
                 {{/with}}
-            </form>
+
+                {{#if errorMessage}}
+                <div class="error col-12">{{errorMessage}}</div>
+                {{/if}}
+
+            </div>
         </div>
-      
 
-
-            {{#if errorMessage}}
-            {{errorMessage}}
-            {{/if}}
-
-
-        </div>
     </div>
 </div>
