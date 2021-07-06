@@ -17,39 +17,112 @@ const Event = require('../models/Event.model');
 const isLoggedIn = require('../middleware/isLoggedIn');
 const loggedUser = require('../utils/loggedUser');
 const roleCheck = require('../middleware/roleCheck');
-const Message = require('../models/Message.model')
+const Message = require('../models/Message.model');
 
-router.get('/', isLoggedIn, (req, res) => {
-    const sessionUser = req.session.user;
+router.get('/:pet_id', isLoggedIn, (req, res) => {
+	const sessionUser = req.session.user;
 
-    Event
-        .find()
-        .then( (events) => {
-            res.render('events/', {events,  user: loggedUser(sessionUser)})
-        })
-        .catch( ( err ) => console.log(err))
+	Event.find()
+		.then((events) => {
+			res.render('events/', { events, user: loggedUser(sessionUser), pet_id: req.params.pet_id });
+		})
+		.catch((err) => console.log(err));
+});
 
-    
-})
+router.get('/:pet_id/add', isLoggedIn, (req, res) => {
+	const sessionUser = req.session.user;
 
-router.get('/add', isLoggedIn, (req, res) => {    
-    const sessionUser = req.session.user;
+	// REVISAR ZONA HORARIA Y FORMATO
+	const date = new Date(Date.now()).toISOString().split('T')[0];
+	const time = new Date(Date.now()).toISOString().split('T')[1].split(':').splice(0, 2).join(':');
+	// let temp = new Date(Date.now().toLocaleString(undefined, { timeZone: 'UTC' }).split(','));
+	// const time = temp[1];
+	// const date = temp[0];
 
-    const date = new Date(Date.now()).toISOString().split('T')[0];
-    const time = new Date(Date.now()).toISOString().split('T')[1].split(':').splice(0,2).join(':');
+	res.render('events/new-event', { user: loggedUser(sessionUser), date, time, pet_id: req.params.pet_id });
+});
 
-    console.log(date)
-    console.log(time)
+router.post('/:pet_id/add', isLoggedIn, (req, res) => {
+	const sessionUser = req.session.user;
 
+	const { eventDate: date, eventTime: time, activity, description, latitude, longitude } = req.body;
 
-    
-    res.render('events/new-event', {user: loggedUser(sessionUser), date, time})
+	const eventFullDate = [date, time].join('T');
 
-})
+	Event.create({
+		creator: req.params.pet_id,
+		participants: [req.params.pet_id],
+		activity,
+		description,
+		creationDate: Date.now(),
+		eventDate: eventFullDate,
+		location: {
+			type: 'Point',
+			coordinates: [latitude, longitude],
+		},
+	})
+		.then((event) => res.redirect('/events'))
+		.catch((err) => console.error(err));
+});
 
+router.get('/:pet_id/details/:event_id', isLoggedIn, (req, res) => {
+	const sessionUser = req.session.user;
+	const { pet_id, event_id } = req.params;
 
+	Event.findById(event_id)
+		.populate('creator')
+		.populate('participants')
+		.then((event) => {
+			const isEnroled = event.participants.some((pet) => pet._id == pet_id);
+			res.render('events/event-details', { user: loggedUser(sessionUser), event, isEnroled, pet_id, event_id });
+		})
+		.catch((err) => console.error(err));
+});
 
+router.post('/:pet_id/details/:event_id/join', isLoggedIn, (req, res) => {
+	const sessionUser = req.session.user;
+	const { pet_id, event_id } = req.params;
 
-    
+	Event.findById(event_id)
+		.populate('creator')
+		.populate('participants')
+		.then((event) => {
+			const isEnroled = event.participants.some((pet) => pet._id == pet_id);
+
+			if (isEnroled) {
+				res.redirect(`/events/${pet_id}/details/${event_id}`);
+				return;
+			}
+
+			const arr = [...event.participants];
+			arr.push(pet_id);
+			return Event.findByIdAndUpdate(event_id, { participants: [...arr] }, { new: true });
+		})
+		.then((event) => res.redirect(`/events/${pet_id}/details/${event_id}`))
+		.catch((err) => console.error(err));
+});
+
+router.post('/:pet_id/details/:event_id/quit', isLoggedIn, (req, res) => {
+	const sessionUser = req.session.user;
+	const { pet_id, event_id } = req.params;
+
+	Event.findById(req.params.event_id)
+		.populate('creator')
+		.populate('participants')
+		.then((event) => {
+			const isEnroled = event.participants.some((pet) => pet._id == pet_id);
+
+			if (!isEnroled) {
+				res.redirect(`/events/${pet_id}/details/${event_id}`);
+				return;
+			}
+
+			const arr = [...event.participants];
+			arr.splice(arr.indexOf(pet_id), 1);
+			return Event.findByIdAndUpdate(event_id, { participants: [...arr] }, { new: true });
+		})
+		.then((event) => res.redirect(`/events/${pet_id}/details/${event_id}`))
+		.catch((err) => console.error(err));
+});
 
 module.exports = router;

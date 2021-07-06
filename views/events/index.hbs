@@ -8,9 +8,10 @@
                 {{#each events}}
                 <li>
                     <h2>Event: {{activity}}</h2>
-                    <p>Description: {{description}}</p>
-                    <form action="/events/{{_id}}" method="GET"> 
-                        <button type="submit">See Details</button> 
+                    <p>Description: {{description}} </p>
+
+                    <form action="/events/{{../pet_id}}/details/{{_id}}" method="GET">
+                        <button type="submit">See Details</button>
                     </form>
                 </li>
                 {{/each}}
@@ -18,35 +19,28 @@
         </div>
 
         {{!-- Formulario de busqueda --}}
-        {{!-- <form class="col-4" action="/events" method="GET">
+        <form class="col-4" action="/events" method="GET">
             <div class="mb-3">
-                <label for="activity-input" class="form-label">Activity:</label>
-                <input type="text" class="form-control" id="activity-input" aria-describedby="activity-input" name="activity">
+                <label for="search-input" class="form-label">Search</label>
+                <input type="text" class="form-control" id="search-input" aria-describedby="search-input"
+                    name="searchText">
             </div>
 
-
+            {{!--
             <div class="mb-3">
-                <label class="mr-sm-2 sr-only" for="creator-input">Creator</label> 
+                <label class="mr-sm-2 sr-only" for="creator-input">Creator</label>
                 <select class="custom-select mr-sm-2" id="creator-input" name="creator">
                     {{#each pets}}
-                        <option value="{{_id}}">{{name}}</option>
+                    <option value="{{_id}}">{{name}}</option>
                     {{/each}}
                 </select>
-            </div>
+            </div> --}}
 
             <div class="mb-3">
-                <label class="mr-sm-2 sr-only" for="participants-input">Participants</label>
-                <p>Cast: <em class="text-muted">(press and hold Ctrl for multiple sellection...)</em></p>
-                <select class="custom-select mr-sm-2" id="participants-input" name="participants" multiple>
-                    {{#each pets}}
-                        <option value="{{_id}}">{{name}}</option>
-                    {{/each}}
-                </select>    
-            </div>
-
-            <div class="mb-3">
-                <label for="location-input" class="form-label">Location:</label>
-                <input type="text" class="form-control" id="location-input" aria-describedby="location-input" name="location">
+                <label class="form-label">Location
+                    <input type="number" name="latitude" placeholder="Latitude" class="form-control">
+                    <input type="number" name="longitude" placeholder="Longitude" class="form-control">
+                </label>
             </div>
 
             <div class="mb-3">
@@ -61,7 +55,7 @@
             {{errorMessage}}
             {{/if}}
 
-        </form> --}}
+        </form>
 
     </div>
 </div>

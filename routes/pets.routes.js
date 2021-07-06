@@ -13,10 +13,9 @@ const User = require('../models/User.model');
 const isLoggedIn = require('../middleware/isLoggedIn');
 const loggedUser = require('../utils/loggedUser');
 const roleCheck = require('../middleware/roleCheck');
-const Message = require('../models/Message.model')
+const Message = require('../models/Message.model');
 
 router.get('/', isLoggedIn, (req, res) => {
-
 	const user = req.session.user;
 	const addressProperties = ['street', 'postal', 'number', 'country', 'city'];
 
@@ -25,7 +24,6 @@ router.get('/', isLoggedIn, (req, res) => {
 			result[key] = req.query[key];
 		}
 		return result;
-
 	}, {});
 
 	const result = Object.keys(req.query).reduce((result, key) => {
@@ -51,34 +49,26 @@ router.get('/', isLoggedIn, (req, res) => {
 		.catch((err) => console.error(err));
 });
 
-
-
 router.get('/:id', isLoggedIn, (req, res) => {
 	const currentUser = req.session.user;
-	console.log('hello')
+	console.log('hello');
 	const isMod = currentUser.role == 'MODERATOR' || currentUser.role == 'ADMIN';
 
-	const { id } = req.params
-	console.log(id, req.url)
-	Pet
-		.findById(req.params.id)
+	const { id } = req.params;
+	console.log(id, req.url);
+	Pet.findById(req.params.id)
 		.then((pet) => res.render('pets/pet-details', { pet, user: loggedUser(currentUser), isMod }))
-		.catch(err => console.log(err))
-})
-
+		.catch((err) => console.log(err));
+});
 
 router.get('/:id/edit', isLoggedIn, roleCheck, (req, res) => {
 	const currentUser = req.session.user;
-	const { id } = req.params
+	const { id } = req.params;
 
-	Pet
-		.findById(id)
+	Pet.findById(id)
 		.then((pet) => res.render('pets/edit-pet', { pet, user: loggedUser(currentUser) }))
-		.catch(err => console.log(err))
-
-})
-
-
+		.catch((err) => console.log(err));
+});
 
 router.post('/:id/edit', isLoggedIn, roleCheck('ADMIN', 'MODERATOR'), (req, res) => {
 	const user = req.session.user;
@@ -95,7 +85,6 @@ router.post('/:id/edit', isLoggedIn, roleCheck('ADMIN', 'MODERATOR'), (req, res)
 			// }
 
 			return Pet.findByIdAndUpdate(req.params.id, { name, description, species, address, age, gender, profile_img });
-
 		})
 		.then((pet) => res.status(200).redirect(`/pets/${req.params.id}`))
 
@@ -112,67 +101,44 @@ router.post('/:id/edit', isLoggedIn, roleCheck('ADMIN', 'MODERATOR'), (req, res)
 		});
 });
 
-
-
 router.post('/:id/delete', isLoggedIn, roleCheck('ADMIN'), (req, res) => {
+	const { id } = req.params;
 
-	const { id } = req.params
-
-	Pet
-		.findByIdAndDelete(id)
+	Pet.findByIdAndDelete(id)
 		.then(() => res.redirect('/pets'))
-		.catch(err => console.log(err))
-})
-
+		.catch((err) => console.log(err));
+});
 
 router.get('/:id/contact', isLoggedIn, (req, res) => {
 	const user = req.session.user;
-	const { id } = req.params
+	const { id } = req.params;
 
-	Pet
-		.findById(id)
+	Pet.findById(id)
 		.then((pet) => res.render('pets/contact-pet', { user: loggedUser(user), pet }))
-		.catch(err => console.log(err))
-})
-
+		.catch((err) => console.log(err));
+});
 
 router.post('/:id/contact', isLoggedIn, (req, res) => {
 	const user = req.session.user;
-	const { body } = req.body
-	const { id } = req.params
+	const { body } = req.body;
+	const { id } = req.params;
 
-	Message
+	Message.create({ origin: user._id, destinatary: id, body, date: Date.now() }).then((message) => {
+		//SI ESTO NOS DA ALGÚN PROBLEMA FUTURO, TENEMOS DEBAJO LA OTRA OPCIÓN (POR MODIFICAR)
+		Pet.findById(id)
+			.then((pet) => {
+				pet.messages.push(message._id);
+				return pet.save();
+			})
+			.then((pet) => {
+				res.render('pets/pet-details', { user: loggedUser(user), pet });
+			})
+			.catch((err) => console.log(err));
 
-		.create({ origin: user._id, destinatary: id, body, date: Date.now() })
-		.then((message) => {
-
-
-			//SI ESTO NOS DA ALGÚN PROBLEMA FUTURO, TENEMOS DEBAJO LA OTRA OPCIÓN (POR MODIFICAR)
-			Pet
-				.findById(id)
-				.then((pet) => {
-					pet.messages.push(message._id);
-					return pet.save()
-
-				})
-				.then((pet) => {
-					
-					res.render('pets/pet-details', { user: loggedUser(user), pet })})
-				.catch(err => console.log(err))
-
-
-
-
-
-			// Pet.findById(id)
-			// .then((pet) => Pet.findByIdAndUpdate(id, { messages: pet.messages.push(message._id) }, { new: true }))
-			// .then((pet) => console.log(message, pet))
-
-		})
-})
-
-
-
-
+		// Pet.findById(id)
+		// .then((pet) => Pet.findByIdAndUpdate(id, { messages: pet.messages.push(message._id) }, { new: true }))
+		// .then((pet) => console.log(message, pet))
+	});
+});
 
 module.exports = router;

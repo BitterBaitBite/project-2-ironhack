@@ -4,14 +4,12 @@ const eventSchema = new Schema({
 	creator: {
 		type: Schema.Types.ObjectId,
 		ref: 'Pet',
-		required: true,
 	},
 
 	participants: [
 		{
 			type: Schema.Types.ObjectId,
 			ref: 'Pet',
-			required: true,
 		},
 	],
 
