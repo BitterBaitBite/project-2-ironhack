@@ -1,0 +1,52 @@
+<div class="container">
+    <div class="row justify-content-center">
+
+        <form class="col-8" action="/events/edit-event" method="POST">
+
+            {{#with event}}
+            <div class="mb-3">
+                <label for="date-input" class="form-label">Date</label>
+                <input type="date" class="form-control" id="date-input" aria-describedby="date-input" name="eventDate"
+                    value="{{eventDate}}">
+            </div>
+
+            <div class="mb-3">
+                <label for="activity-input" class="form-label">Activity</label>
+                <input type="text" class="form-control" id="activity-input" aria-describedby="activity-input"
+                    name="activity" value="{{activity}}">
+            </div>
+
+            <div class="mb-3">
+                <label for="description-input" class="form-label">Description</label>
+                <textarea name="description" id="description-input" cols="30" rows="10"
+                    class="form-control">{{description}}</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Location
+                    <input type="text" name="latitude" placeholder="latitude" class="form-control"
+                        value='{{location.coordinates.[0]}}'>
+                    <input type="text" name="longitude" placeholder="longitude" class="form-control"
+                        value='{{location.coordinates.[1]}}'>
+                </label>
+            </div>
+
+            {{!-- Google Maps API script --}}
+            {{!-- <div id="places-list-map"></div> --}}
+
+            {{/with}}
+
+            <button type="submit" class="btn btn-primary">Add event</button>
+
+            {{#if errorMessage}}
+            {{errorMessage}}
+            {{/if}}
+
+        </form>
+
+    </div>
+</div>
+
+{{!-- Google Maps API script --}}
+{{!--
+<script src="https://maps.googleapis.com/maps/api/js?key={{MAPS_KEY}}&callback=initMap"></script> --}}
