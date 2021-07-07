@@ -33,6 +33,12 @@ module.exports = {
 		}
 
 		return res.status(500).render('user/', { errorMessage: err.message });
+	},
+
+	dateFormat: (dateUnix) => {
+		const date = dateUnix.toISOString().split('T')[0];
+		const time = dateUnix.toISOString().split('T')[1].split(':').splice(0, 2).join(':');
+		return {date, time}
 	}
 
 

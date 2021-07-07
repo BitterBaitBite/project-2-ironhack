@@ -10,7 +10,7 @@
 const router = require('express').Router();
 const Event = require('../models/Event.model');
 const {isLoggedIn} = require('../middleware/');
-const {errorValidation} = require('../utils/');
+const {errorValidation, dateFormat} = require('../utils/');
 
 router.get('/:pet_id', isLoggedIn, (req, res) => {
 	Event.find()
@@ -22,8 +22,11 @@ router.get('/:pet_id', isLoggedIn, (req, res) => {
 
 router.get('/:pet_id/add', isLoggedIn, (req, res) => {
 	// REVISAR ZONA HORARIA Y FORMATO
-	const date = new Date(Date.now()).toISOString().split('T')[0];
-	const time = new Date(Date.now()).toISOString().split('T')[1].split(':').splice(0, 2).join(':');
+	const dateUnix = new Date(Date.now())
+
+
+	const {date, time} = dateFormat( dateUnix )
+
 	// let temp = new Date(Date.now().toLocaleString(undefined, { timeZone: 'UTC' }).split(','));
 	// const time = temp[1];
 	// const date = temp[0];
@@ -48,7 +51,7 @@ router.post('/:pet_id/add', isLoggedIn, (req, res) => {
 			coordinates: [latitude, longitude],
 		},
 	})
-		.then((event) => res.redirect('/events'))
+		.then((event) => res.redirect(`/events/${req.params.pet_id}`))
 		.catch((err) => errorValidation(res, err));
 });
 
