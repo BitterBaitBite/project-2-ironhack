@@ -5,13 +5,11 @@
 // -   /pets/:id/edit (get, post)(admin only, moderator for reviews)
 // -   /pets/:id/delete (post)(admin only)
 const router = require('express').Router();
-const mongoose = require('mongoose');
 
 const Pet = require('../models/Pet.model');
-const isLoggedIn = require('../middleware/isLoggedIn');
-const roleCheck = require('../middleware/roleCheck');
+const { isLoggedIn, roleCheck } = require('../middleware/');
 const Message = require('../models/Message.model');
-const errorValidation = require('../utils/errors/errorValidation');
+const { errorValidation, hasRole } = require('../utils/');
 
 router.get('/', isLoggedIn, (req, res) => {
 	const addressProperties = ['street', 'postal', 'number', 'country', 'city'];
@@ -46,14 +44,14 @@ router.get('/', isLoggedIn, (req, res) => {
 });
 
 router.get('/:id', isLoggedIn, (req, res) => {
-	const isMod = req.session.user.role == 'MODERATOR' || req.session.user.role == 'ADMIN';
+	// const isMod = req.session.user.role == 'MODERATOR' || req.session.user.role == 'ADMIN';
 
 	Pet.findById(req.params.id)
-		.then((pet) => res.render('pets/pet-details', { pet, isMod }))
+		.then((pet) => res.render('pets/pet-details', { pet, isMod: hasRole(req.session.user, 'MODERATOR', 'ADMIN' )}))
 		.catch((err) => errorValidation(res, err));
 });
 
-router.get('/:id/edit', isLoggedIn, roleCheck, (req, res) => {
+router.get('/:id/edit', isLoggedIn, roleCheck('ADMIN', 'MODERATOR'), (req, res) => {
 	Pet.findById(req.params.id)
 		.then((pet) => res.render('pets/edit-pet', { pet }))
 		.catch((err) => errorValidation(res, err));

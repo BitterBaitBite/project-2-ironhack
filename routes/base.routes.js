@@ -1,4 +1,5 @@
-const loggedUser = require('../utils/loggedUser');
+const { loggedUser } = require('../utils/');
+//REVISAR SI PODEMOS QUITARLO
 
 const router = require('express').Router();
 

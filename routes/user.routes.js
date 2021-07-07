@@ -9,27 +9,25 @@
 // -   /profile/:pet_id/delete
 
 const router = require('express').Router();
-const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 
 const Pet = require('../models/Pet.model');
 const User = require('../models/User.model');
-const isLoggedIn = require('../middleware/isLoggedIn');
-const errorValidation = require('../utils/errors/errorValidation');
-const hasPet = require('../utils/hasPet');
+const {isLoggedIn} = require('../middleware/');
+const { errorValidation, hasPet, hasRole } = require('../utils/');
+
 
 router.get('/', isLoggedIn, (req, res) => {
 	const sessionUser = req.session.user;
-	const isMod = sessionUser.role == 'MODERATOR' || sessionUser.role == 'ADMIN';
+	// const isMod = sessionUser.role == 'MODERATOR' || sessionUser.role == 'ADMIN';
 
 	User.findById(sessionUser._id)
 		.populate('pets')
 		.then((user) => {
 			if (!user) res.status(400).redirect('/login');
 			res.status(200).render('user', {
-				user,
-				isMod,
+				user, isMod: hasRole(req.session.user, 'MODERATOR', 'ADMIN'),
 			});
 		})
 		.catch((err) => errorValidation(res, err));
@@ -41,8 +39,7 @@ router.get('/new-pet', isLoggedIn, (req, res) => {
 
 router.post('/new-pet', isLoggedIn, (req, res) => {
 	const sessionUser = req.session.user;
-	const { name, description, species, age, gender, profile_img } = req.body;
-	const { street, postal, number, country, city } = req.body;
+	const { name, description, species, age, gender, profile_img, street, postal, number, country, city } = req.body;
 	const address = { street, postal, number, country, city };
 
 	if (!name) {

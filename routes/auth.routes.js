@@ -2,16 +2,14 @@ const router = require('express').Router();
 
 // Handles password encryption
 const bcrypt = require('bcryptjs');
-const mongoose = require('mongoose');
 
 // How many rounds should bcrypt run the salt (default [10 - 12 rounds])
 const saltRounds = 10;
 
 const User = require('../models/User.model');
 
-const isLoggedOut = require('../middleware/isLoggedOut');
-const isLoggedIn = require('../middleware/isLoggedIn');
-const errorValidation = require('../utils/errors/errorValidation');
+const { isLoggedOut, isLoggedIn } = require('../middleware/');
+const { errorValidation } = require('../utils/');
 
 router.get('/signup', isLoggedOut, (req, res) => {
 	res.render('auth/signup');

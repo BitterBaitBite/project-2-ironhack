@@ -8,10 +8,9 @@
 // -   /events/:id/quit (owner only)(option to multipet join)
 
 const router = require('express').Router();
-
 const Event = require('../models/Event.model');
-const isLoggedIn = require('../middleware/isLoggedIn');
-const errorValidation = require('../utils/errors/errorValidation');
+const {isLoggedIn} = require('../middleware/');
+const {errorValidation} = require('../utils/');
 
 router.get('/:pet_id', isLoggedIn, (req, res) => {
 	Event.find()
