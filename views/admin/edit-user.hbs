@@ -1,0 +1,39 @@
+<div class="container">
+    <div class="row justify-content-center">
+        {{#with user}}
+        <form class="col-6 container-fluid" action="/admin/{{_id}}/edit-user" method="POST">
+            <div class="row g-0">
+
+
+                <div class="mb-3 col-12">
+                    <label for="username-input" class="form-label">Username</label>
+                    <input type="text" class="form-control" id="username-input" aria-describedby="username-input"
+                        name="username" value='{{username}}'>
+                </div>
+
+                <div class="mb-3 col-12">
+                    <label for="email-input" class="form-label">Email</label>
+                    <input type="text" class="form-control" id="email-input" name="email" value='{{email}}'>
+                </div>
+
+                <div class="mb-3 col-12">
+                    <label for="role-select"></label>
+                    <select name="role" id="role-select">
+                        <option value="OWNER">Owner</option>
+                        <option value="MODERATOR">Moderator</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-custom col-12">Update</button>
+
+                {{/with}}
+
+                {{#if errorMessage}}
+                <div class="error">{{errorMessage}}</div>
+                {{/if}}
+
+            </div>
+        </form>
+
+    </div>
+</div>

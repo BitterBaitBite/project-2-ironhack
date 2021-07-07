@@ -5,13 +5,12 @@
 // -   /admin/:user_id/role-edit?role-query
 
 const router = require('express').Router();
-const bcrypt = require('bcryptjs');
-const saltRounds = 10;
 
-const Pet = require('../models/Pet.model');
 const User = require('../models/User.model');
+const Review = require('../models/Review.model');
 const { isLoggedIn, roleCheck } = require('../middleware/');
 const { errorValidation, hasPet, hasRole } = require('../utils/');
+const { events } = require('../models/Pet.model');
 
 
 router.get('/', isLoggedIn, roleCheck('ADMIN'), (req, res) => {
@@ -19,34 +18,67 @@ router.get('/', isLoggedIn, roleCheck('ADMIN'), (req, res) => {
 })
 
 router.get('/users', isLoggedIn, roleCheck('ADMIN'), (req, res) => {
+    //seria bonito ver los eventos!!!
     User
-        .find()
+        .find({ role: { $ne: 'ADMIN' } })
         .populate({
             path: 'pets',
-            populate: {
-                path: 'messages'
+            populate: [{
+                path: 'reviews',
+                // model: 'Review'
+            },
+            {
+                path: 'friends',
+                // model: 'Pet',
+                select: '_id name'
             }
+            ]
         })
         .then(users => {
-            res.send(users)
+            res.render('admin/users-panel', { users })
         })
 
 
 })
 
 
+router.get('/:id/edit-user', isLoggedIn, roleCheck('ADMIN'), (req, res) => {
+    const { id } = req.params
+    User
+        .findById(id)
+        .then(user => {
+            res.render('admin/edit-user', { user });
+        })
 
-//    User.findById(req.params.id)
-//         .populate({
-//             path: 'pets',
-//             populate: {
-//                 path: 'reviews'
-//             }
-//         }
-// 	})
-//         .populate(...)
+});
+
+router.post('/:id/edit-user', isLoggedIn, roleCheck('ADMIN'), (req, res) => {
+    const { id } = req.params
+    const { username, email, role } = req.body;
 
 
+
+    if (!username) {
+        return res.status(400).redirect(`/${id}/edit-user`)
+    }
+
+    User.findByIdAndUpdate(id, { username, email, role })
+        .then((user) => {
+            // Bind the user to the session object
+            res.redirect('/admin/users');
+        })
+        .catch((err) => errorValidation(res, err));
+})
+
+router.post('/:id/delete-user', isLoggedIn, roleCheck('ADMIN'), (req, res) => {
+    const { id } = req.params
+
+    User.findByIdAndDelete(id)
+        .then((user) => {
+            res.redirect('/admin/users');
+        })
+        .catch((err) => errorValidation(res, err));
+})
 
 
 

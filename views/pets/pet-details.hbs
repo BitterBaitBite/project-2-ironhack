@@ -16,7 +16,7 @@
 
                     <p>Species: {{species}}</p>
 
-                    <label class="address-block"><span>Address</span>
+                    <label class="address-block full-width"><span>Address</span>
                         <p>Country: {{address.country}}</p>
                         <p>City: {{address.city}}</p>
                     </label>
@@ -25,11 +25,12 @@
                     <p>Gender: {{gender}}</p>
                 </div>
 
+                {{#unless ../isMod}}
                 <form action="/pets/{{_id}}/contact" method="GET">
                     <button type="submit" class="btn btn-custom full-width col-12">Contact</button>
                 </form>
 
-                {{#if ../isMod}}
+                {{else}}
                 <form action="/pets/{{_id}}/edit" method="GET">
                     <button type="submit" class="btn btn-custom full-width col-12 col-sm-6 col-md-4">Edit</button>
                 </form>
@@ -37,7 +38,8 @@
                 <form action="/pets/{{_id}}/delete" method="POST">
                     <button type="submit" class="btn btn-warning full-width col-12 col-sm-6 col-md-5">Delete</button>
                 </form>
-                {{/if}}
+                {{/unless}}
+
 
                 {{/with}}
 
