@@ -39,6 +39,11 @@ module.exports = {
 		const date = dateUnix.toISOString().split('T')[0];
 		const time = dateUnix.toISOString().split('T')[1].split(':').splice(0, 2).join(':');
 		return {date, time}
+	},
+
+	dateReverseFormat: (date, time) => {
+		
+		return new Date(date + 'T' + time + ':00.000Z')
 	}
 
 

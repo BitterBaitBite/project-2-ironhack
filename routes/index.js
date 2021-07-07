@@ -5,7 +5,7 @@ module.exports = (app) => {
 			res.locals.isLogged = true;
 		}
 		if (req.session.pet) res.locals.currentPet = req.session.pet;
-
+		res.locals.MAPS_KEY = process.env.MAPS_KEY
 		next();
 	});
 	app.use('/', require('./base.routes'));

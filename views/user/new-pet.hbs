@@ -20,15 +20,15 @@
             <div class="mb-3">
                 <label class="form-label">Address
                     <label class="form-label">Street</label>
-                    <input type="text" class="form-control" id="street-input" name="street">
+                    <input type="text" class="form-control  addressInput" id="street-input" name="street">
                     <label class="form-label">Postal</label>
-                    <input type="text" class="form-control" id="postal-input" name="postal">
+                    <input type="text" class="form-control addressInput" id="postal-input" name="postal">
                     <label class="form-label">Number</label>
-                    <input type="number" class="form-control" id="number-input" name="number">
+                    <input type="number" class="form-control addressInput" id="number-input" name="number">
                     <label class="form-label">Country</label>
-                    <input type="text" class="form-control" id="country-input" name="country">
+                    <input type="text" class="form-control addressInput" id="country-input" name="country">
                     <label class="form-label">City</label>
-                    <input type="text" class="form-control" id="city-input" name="city">
+                    <input type="text" class="form-control addressInput" id="city-input" name="city">
                 </label>
             </div>
 
@@ -61,3 +61,13 @@
 
     </div>
 </div>
+
+
+
+<div id="untouchableMap"></div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
+<script src="../js/scriptmap.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{MAPS_KEY}}&callback=initgeoCoderMap"></script>
+

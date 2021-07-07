@@ -75,6 +75,18 @@ label > span {
 	font-weight: 500;
 	margin: 5px auto;
 }
+#untouchableMap {
+
+	height: 200px;
+	background-color: greenyellow;
+}
+
+
+#mapTest {
+
+	height: 200px;
+	background-color: greenyellow;
+}
 
 /* Bootstrap classes tweaks */
 .navbar-brand {

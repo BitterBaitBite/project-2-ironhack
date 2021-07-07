@@ -30,7 +30,7 @@
                     {{description}}</textarea>
                 </div>
 
-                <div class="mb-3 col-12">
+                <div class="mb-3 col-12 hidden">
                     <label class="form-label">Location
                         <input type="number" name="latitude" placeholder="Latitude" class="form-control"
                             value='{{location.coordinates.[0]}}' disabled>
@@ -43,15 +43,17 @@
                 <div id="map-container" class="col-12"></div>
 
                 {{/with}}
-
+                {{#unless isOwner}}
+                <form action="/events/{{event_id}}/edit" method="get" class="col-12 col-sm-6 col-md-4">
+                    <button type="submit" class="btn btn-custom">Edit</button>
+                </form>
+                {{/unless}}
                 {{#unless isEnroled}}
-                <form action="/events/{{event_id}}/join" method="post"
-                    class="col-12 col-sm-6 col-md-4">
+                <form action="/events/{{event_id}}/join" method="post" class="col-12 col-sm-6 col-md-4">
                     <button type="submit" class="btn btn-custom">Join</button>
                 </form>
                 {{else}}
-                <form action="/events/{{event_id}}/quit" method="post"
-                    class="col-12 col-sm-6 col-md-4">
+                <form action="/events/{{event_id}}/quit" method="post" class="col-12 col-sm-6 col-md-4">
                     <button type="submit" class="btn btn-custom">Quit</button>
                 </form>
                 {{/unless}}
@@ -65,3 +67,9 @@
 
     </div>
 </div>
+
+<div id="untouchableMap" ></div>
+
+
+<script src="../js/scriptmap.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{MAPS_KEY}}&callback=initDetailsMap"></script>
