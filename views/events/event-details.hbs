@@ -45,12 +45,12 @@
                 {{/with}}
 
                 {{#unless isEnroled}}
-                <form action="/events/{{pet_id}}/details/{{event_id}}/join" method="post"
+                <form action="/events/{{event_id}}/join" method="post"
                     class="col-12 col-sm-6 col-md-4">
                     <button type="submit" class="btn btn-custom">Join</button>
                 </form>
                 {{else}}
-                <form action="/events/{{pet_id}}/details/{{event_id}}/quit" method="post"
+                <form action="/events/{{event_id}}/quit" method="post"
                     class="col-12 col-sm-6 col-md-4">
                     <button type="submit" class="btn btn-custom">Quit</button>
                 </form>

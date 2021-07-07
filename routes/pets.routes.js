@@ -7,11 +7,11 @@
 const router = require('express').Router();
 
 const Pet = require('../models/Pet.model');
-const { isLoggedIn, roleCheck } = require('../middleware/');
+const { isLoggedIn, roleCheck, isPetLoggedIn } = require('../middleware/');
 const Message = require('../models/Message.model');
 const { errorValidation, hasRole } = require('../utils/');
 
-router.get('/', isLoggedIn, (req, res) => {
+router.get('/', isLoggedIn, isPetLoggedIn, (req, res) => {
 	const addressProperties = ['street', 'postal', 'number', 'country', 'city'];
 
 	// BUG - REFACTORIZAR CÓDIGO
@@ -43,7 +43,7 @@ router.get('/', isLoggedIn, (req, res) => {
 		.catch((err) => errorValidation(res, err));
 });
 
-router.get('/:id', isLoggedIn, (req, res) => {
+router.get('/:id', isLoggedIn, isPetLoggedIn, (req, res) => {
 	// const isMod = req.session.user.role == 'MODERATOR' || req.session.user.role == 'ADMIN';
 
 	Pet.findById(req.params.id)
@@ -80,7 +80,7 @@ router.post('/:id/delete', isLoggedIn, roleCheck('ADMIN'), (req, res) => {
 		.catch((err) => errorValidation(res, err));
 });
 
-router.get('/:id/contact', isLoggedIn, (req, res) => {
+router.get('/:id/contact', isLoggedIn, isPetLoggedIn, (req, res) => {
 	const { id } = req.params;
 
 	Pet.findById(id)
@@ -88,7 +88,7 @@ router.get('/:id/contact', isLoggedIn, (req, res) => {
 		.catch((err) => errorValidation(res, err));
 });
 
-router.post('/:id/contact', isLoggedIn, (req, res) => {
+router.post('/:id/contact', isLoggedIn, isPetLoggedIn, (req, res) => {
 	const { body } = req.body;
 	const { id } = req.params;
 

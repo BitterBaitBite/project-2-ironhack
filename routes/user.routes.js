@@ -14,12 +14,16 @@ const saltRounds = 10;
 
 const Pet = require('../models/Pet.model');
 const User = require('../models/User.model');
-const {isLoggedIn} = require('../middleware/');
+const {isLoggedIn, isPetLoggedIn, isPetLoggedOut} = require('../middleware/');
 const { errorValidation, hasPet, hasRole } = require('../utils/');
 
 
 router.get('/', isLoggedIn, (req, res) => {
 	const sessionUser = req.session.user;
+
+	if( req.session.pet ){
+		delete req.session.pet
+	}
 	// const isMod = sessionUser.role == 'MODERATOR' || sessionUser.role == 'ADMIN';
 
 	User.findById(sessionUser._id)
@@ -33,11 +37,11 @@ router.get('/', isLoggedIn, (req, res) => {
 		.catch((err) => errorValidation(res, err));
 });
 
-router.get('/new-pet', isLoggedIn, (req, res) => {
+router.get('/new-pet', isLoggedIn, isPetLoggedOut, (req, res) => {
 	res.render('user/new-pet');
 });
 
-router.post('/new-pet', isLoggedIn, (req, res) => {
+router.post('/new-pet', isLoggedIn, isPetLoggedOut, (req, res) => {
 	const sessionUser = req.session.user;
 	const { name, description, species, age, gender, profile_img, street, postal, number, country, city } = req.body;
 	const address = { street, postal, number, country, city };
@@ -68,11 +72,11 @@ router.post('/new-pet', isLoggedIn, (req, res) => {
 
 // User Profile Edit
 
-router.get('/edit', isLoggedIn, (req, res) => {
+router.get('/edit', isLoggedIn, isPetLoggedOut, (req, res) => {
 	res.render('user/edit-user', { user: req.session.user });
 });
 
-router.post('/edit', isLoggedIn, (req, res) => {
+router.post('/edit', isLoggedIn, isPetLoggedOut, (req, res) => {
 	const sessionUser = req.session.user;
 	const { username, email, password } = req.body;
 
@@ -126,11 +130,11 @@ router.post('/edit', isLoggedIn, (req, res) => {
 
 //Delete user
 
-router.get('/delete', isLoggedIn, (req, res) => {
+router.get('/delete', isLoggedIn, isPetLoggedOut, (req, res) => {
 	res.render('user/delete-user');
 });
 
-router.post('/delete', isLoggedIn, (req, res) => {
+router.post('/delete', isLoggedIn, isPetLoggedOut, (req, res) => {
 	const sessionUser = req.session.user;
 
 	const deletePets = Pet.deleteMany({
@@ -152,8 +156,9 @@ router.post('/delete', isLoggedIn, (req, res) => {
 		.catch((err) => errorValidation(res, err));
 });
 
-router.get('/:id', isLoggedIn, (req, res) => {
+router.get('/:id', isLoggedIn, isPetLoggedOut, (req, res) => {
 	const id = req.params.id;
+
 
 	if (!hasPet(req.session.user, req.params.id)) {
 		res.status(401).render('user/', { errorMessage: 'Not authorized for that pet' });
@@ -161,7 +166,10 @@ router.get('/:id', isLoggedIn, (req, res) => {
 	}
 
 	Pet.findById(id)
-		.then((pet) => res.status(200).render('user/pet-details', { pet }))
+		.then((pet) => {
+			req.session.pet = pet
+			res.status(200).render('user/pet-details', { pet })
+		})
 		.catch((err) => errorValidation(res, err));
 });
 

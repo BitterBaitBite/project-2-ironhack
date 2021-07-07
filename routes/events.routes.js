@@ -9,18 +9,19 @@
 
 const router = require('express').Router();
 const Event = require('../models/Event.model');
-const {isLoggedIn} = require('../middleware/');
+const {isLoggedIn, isPetLoggedIn, isPetLoggedOut } = require('../middleware/');
 const {errorValidation, dateFormat} = require('../utils/');
 
-router.get('/:pet_id', isLoggedIn, (req, res) => {
+router.get('/', isLoggedIn, isPetLoggedIn, (req, res) => {
+	
 	Event.find()
 		.then((events) => {
-			res.render('events/', { events, pet_id: req.params.pet_id });
+			res.render('events/', { events, pet_id: req.session.pet._id });
 		})
 		.catch((err) => errorValidation(res, err));
 });
 
-router.get('/:pet_id/add', isLoggedIn, (req, res) => {
+router.get('/add', isLoggedIn, isPetLoggedIn, (req, res) => {
 	// REVISAR ZONA HORARIA Y FORMATO
 	const dateUnix = new Date(Date.now())
 
@@ -31,17 +32,17 @@ router.get('/:pet_id/add', isLoggedIn, (req, res) => {
 	// const time = temp[1];
 	// const date = temp[0];
 
-	res.render('events/new-event', { date, time, pet_id: req.params.pet_id });
+	res.render('events/new-event', { date, time, pet_id: req.session.pet._id });
 });
 
-router.post('/:pet_id/add', isLoggedIn, (req, res) => {
+router.post('/add', isLoggedIn, isPetLoggedIn, (req, res) => {
 	const { eventDate: date, eventTime: time, activity, description, latitude, longitude } = req.body;
 
 	const eventFullDate = [date, time].join('T');
 
 	Event.create({
-		creator: req.params.pet_id,
-		participants: [req.params.pet_id],
+		creator: req.session.pet._id,
+		participants: [req.session.pet._id],
 		activity,
 		description,
 		creationDate: Date.now(),
@@ -51,64 +52,56 @@ router.post('/:pet_id/add', isLoggedIn, (req, res) => {
 			coordinates: [latitude, longitude],
 		},
 	})
-		.then((event) => res.redirect(`/events/${req.params.pet_id}`))
+		.then((event) => res.redirect(`/events/${event._id}`))
 		.catch((err) => errorValidation(res, err));
 });
 
-router.get('/:pet_id/details/:event_id', isLoggedIn, (req, res) => {
-	const { pet_id, event_id } = req.params;
+router.get('/:event_id', isLoggedIn, isPetLoggedIn, (req, res) => {
+	const { event_id } = req.params;
 
 	Event.findById(event_id)
 		.populate('creator')
 		.populate('participants')
 		.then((event) => {
-			const isEnroled = event.participants.some((pet) => pet._id == pet_id);
-			res.render('events/event-details', { event, isEnroled, pet_id, event_id });
+			const isEnroled = event.participants.some((pet) => pet._id == req.session.pet._id);
+			res.render('events/event-details', { event, isEnroled, pet_id: req.session.pet._id, event_id });
 		})
 		.catch((err) => errorValidation(res, err));
 });
 
-router.post('/:pet_id/details/:event_id/join', isLoggedIn, (req, res) => {
-	const { pet_id, event_id } = req.params;
+router.post('/:event_id/join', isLoggedIn, isPetLoggedIn, (req, res) => {
+	const {  event_id } = req.params;
 
 	Event.findById(event_id)
-		.populate('creator')
-		.populate('participants')
 		.then((event) => {
-			const isEnroled = event.participants.some((pet) => pet._id == pet_id);
+			const isEnroled = event.participants.some((pet) => pet._id == req.session.pet._id);
 
 			if (isEnroled) {
-				res.redirect(`/events/${pet_id}/details/${event_id}`);
+				res.redirect(`/events/${event_id}`);
 				return;
 			}
 
-			const arr = [...event.participants];
-			arr.push(pet_id);
-			return Event.findByIdAndUpdate(event_id, { participants: [...arr] }, { new: true });
+			return Event.findByIdAndUpdate(event_id, {$push: {participants: req.session.pet._id}}, { new: true });
 		})
-		.then((event) => res.redirect(`/events/${pet_id}/details/${event_id}`))
+		.then((event) => res.redirect(`/events/${event_id}`))
 		.catch((err) => errorValidation(res, err));
 });
 
-router.post('/:pet_id/details/:event_id/quit', isLoggedIn, (req, res) => {
-	const { pet_id, event_id } = req.params;
+router.post('/:event_id/quit', isLoggedIn, isPetLoggedIn, (req, res) => {
+	const {  event_id } = req.params;
 
 	Event.findById(req.params.event_id)
-		.populate('creator')
-		.populate('participants')
 		.then((event) => {
-			const isEnroled = event.participants.some((pet) => pet._id == pet_id);
+			const isEnroled = event.participants.some((pet) => pet._id == req.session.pet._id);
 
 			if (!isEnroled) {
-				res.redirect(`/events/${pet_id}/details/${event_id}`);
+				res.redirect(`/events/${event_id}`);
 				return;
 			}
 
-			const arr = [...event.participants];
-			arr.splice(arr.indexOf(pet_id), 1);
-			return Event.findByIdAndUpdate(event_id, { participants: [...arr] }, { new: true });
+			return Event.findByIdAndUpdate(event_id, {$pull: {participants: req.session.pet._id}}, { new: true });
 		})
-		.then(() => res.redirect(`/events/${pet_id}/details/${event_id}`))
+		.then(() => res.redirect(`/events/${event_id}`))
 		.catch((err) => errorValidation(res, err));
 });
 
