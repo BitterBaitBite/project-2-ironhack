@@ -13,4 +13,5 @@ module.exports = (app) => {
 	app.use('/profile', require('./user.routes'));
 	app.use('/pets', require('./pets.routes'));
 	app.use('/events', require('./events.routes'));
+	app.use('/admin', require('./admin.routes'));
 };

@@ -32,21 +32,23 @@ module.exports = {
 
     isPetLoggedIn: (req, res, next) => {
         // checks if the user is logged in when trying to access a specific page
-        if (!req.session.pet) {
-            return res.render('user/', {errorMessage: "You need to select a pet to proceed."});
+
+        if (!req.session.pet && req.session.user.role != 'ADMIN') {
+            return res.render('user/', { errorMessage: "You need to select a pet to proceed." });
         }
         next();
     },
 
     isPetLoggedOut: (req, res, next) => {
+
         if (req.session.pet) {
             console.log(req.session.pet)
-            return res.render('user/', {errorMessage: "Cannot proceed from Pet profile."});
+            return res.render('user/', { errorMessage: "Cannot proceed from Pet profile." });
         }
         next();
     },
 
-    
+
 
 
 }
