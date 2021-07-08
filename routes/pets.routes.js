@@ -57,6 +57,7 @@ router.get('/:id', isLoggedIn, isPetLoggedIn, (req, res) => {
 				isMod: hasRole(req.session.user, 'MODERATOR', 'ADMIN'),
 				hasReview: req.session.pet ? hasReview(pet.reviews, req.session.pet) : false,
 				rating,
+				ratingNumber: pet.reviews.length,
 			});
 		})
 		.catch((err) => errorValidation(res, err));
@@ -107,11 +108,11 @@ router.post('/:id/contact', isLoggedIn, isPetLoggedIn, roleCheck('OWNER'), (req,
 	const { id } = req.params;
 
 	Message.create({ origin: req.session.pet._id, destinatary: id, body, date: Date.now() })
-		.then((message) => Pet.findByIdAndUpdate(id, { $push: { messages: message._id } }, { new: true }))
-		.then((pet) => {
+		.then((message) => {
 			req.session.pet.messages.push(message._id);
-			res.render('pets/pet-details', { pet });
+			return Pet.findByIdAndUpdate(id, { $push: { messages: message._id } }, { new: true });
 		})
+		.then((pet) => res.render('pets/pet-details', { pet }))
 		.catch((err) => errorValidation(res, err));
 });
 

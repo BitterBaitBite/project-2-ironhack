@@ -1,7 +1,7 @@
 {{#with user}}
 
-<div class="col-12 container-fluid">
-    <div class="row gy-2 justify-content-center text-align-center">
+<div class="col-8 container-fluid">
+    <div class="row gy-2 justify-content-center">
 
         <div class="col-12">
             <h2>Username:{{username}}</h2>
@@ -27,25 +27,26 @@
     </div>
 </div>
 
+<div class="col-8">
+    <hr>
+</div>
+
 <div class="col-12 container-fluid">
-    <ul class="row justify-content-evenly">
+
+    <ul class="row justify-content-evenly text-align-center">
+        <h4> - Select your pet - </h4>
         {{#each pets}}
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+        <div class="col-12 col-sm-6 col-md-4 col-xl-3">
             <a href="/profile/{{_id}}">
                 <li class="pet-item container-fluid">
                     <div class="row g-0 gy-2">
                         <div class="col-12">
-                            <img src={{profile_img}} alt="profile image">
+                            <img src={{profile_img}} alt="profile image" class="all-list-img">
                             <h3>{{name}}</h3>
                             <p>{{species}}</p>
-                            <p>Age: {{age}}</p>
-                            <p>Gender: {{gender}}</p>
+                            {{!-- <p>Age: {{age}}</p> --}}
+                            {{!-- <p>Gender: {{gender}}</p> --}}
                         </div>
-
-                        {{!-- <form action="/profile/{{_id}}" method="GET">
-                            <button type="submit"
-                                class="btn btn-custom full-width col-12 col-sm-6 col-md-4">Details</button>
-                        </form> --}}
 
                         <form action="/profile/{{_id}}/edit" method="GET">
                             <button type="submit"

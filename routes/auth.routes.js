@@ -12,6 +12,9 @@ const { isLoggedOut, isLoggedIn } = require('../middleware/');
 const { errorValidation } = require('../utils/');
 
 router.get('/signup', isLoggedOut, (req, res) => {
+	if (req.session.pet) {
+		delete req.session.pet;
+	}
 	res.render('auth/signup');
 });
 
@@ -66,6 +69,9 @@ router.post('/signup', isLoggedOut, (req, res) => {
 });
 
 router.get('/login', isLoggedOut, (req, res) => {
+	if (req.session.pet) {
+		delete req.session.pet;
+	}
 	res.render('auth/login');
 });
 
@@ -109,6 +115,10 @@ router.post('/login', isLoggedOut, (req, res, next) => {
 });
 
 router.get('/logout', isLoggedIn, (req, res) => {
+	if (req.session.pet) {
+		delete req.session.pet;
+	}
+
 	req.session.destroy((err) => {
 		if (err) return res.status(500).render('auth/logout', { errorMessage: err.message });
 

@@ -1,18 +1,11 @@
+const { localsUpdate } = require('../middleware');
+
 module.exports = (app) => {
-	app.use((req, res, next) => {
-		if (req.session.user) {
-			res.locals.currentUser = req.session.user;
-			res.locals.isLogged = true;
-		}
-		if (req.session.pet) res.locals.currentPet = req.session.pet;
-		res.locals.MAPS_KEY = process.env.MAPS_KEY;
-		next();
-	});
-	app.use('/', require('./base.routes'));
-	app.use('/', require('./auth.routes'));
-	app.use('/profile', require('./user.routes'));
-	app.use('/pets', require('./pets.routes'));
-	app.use('/events', require('./events.routes'));
-	app.use('/admin', require('./admin.routes'));
-	app.use('/messages', require('./messages.routes'));
+	app.use('/', localsUpdate, require('./base.routes'));
+	app.use('/', localsUpdate, require('./auth.routes'));
+	app.use('/profile', localsUpdate, require('./user.routes'));
+	app.use('/pets', localsUpdate, require('./pets.routes'));
+	app.use('/events', localsUpdate, require('./events.routes'));
+	app.use('/admin', localsUpdate, require('./admin.routes'));
+	app.use('/messages', localsUpdate, require('./messages.routes'));
 };

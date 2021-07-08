@@ -1,11 +1,31 @@
 {{#with pet}}
 <div class="col-8 container-fluid">
-    <div class="row g-0 gy-2">
+    <div class="row g-0 gy-2 justify-content-center">
 
+        <div class="col-10 container-fluid">
+            <div class="row g-2 gy-2 justify-content-between">
+                <form action="/profile" method="GET" class="col-12 col-sm-6">
+                    <button type="submit" class="btn btn-light full-width ">Go back</button>
+                </form>
 
-        <img src='{{profile_img}}' alt="profile image">
+                <form action="/pets" method="GET" class="col-12 col-sm-6">
+                    <button type="submit" class="btn btn-custom full-width ">Social</button>
+                </form>
 
-        <div class="col-12">
+                <form action="/events" method="GET" class="col-12 col-sm-6">
+                    <button type="submit" class="btn btn-custom full-width">See all events</button>
+                </form>
+
+                <form action="/events/add" method="GET" class="col-12 col-sm-6">
+                    <button type="submit" class="btn btn-custom full-width">Create event</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-10 profile-details-container">
+
+            <img src='{{profile_img}}' alt="profile image" class="col-12 profile-details-img">
+
             <h2>{{name}}</h2>
 
             <label><span>Description</span></label>
@@ -14,11 +34,6 @@
             <p><strong>Species:</strong> {{species}}</p>
 
             <label class="address-block full-width margin-bottom-2"><span>Address</span>
-                {{!-- <p>Street: <span>{{address.street}}</span></p>
-                <p>Postal: <span>{{address.postal}}</span></p>
-                <p>Number: <span>{{address.number}}</span></p>
-                <p>Country: <span>{{address.country}}</span></p>
-                <p>City: <span>{{address.city}}</span></p> --}}
 
                 <label class="form-label full-width margin-bottom-2">Street</label>
                 <input type="text" class="form-control col-12 addressInput" id="street-input" name="street"
@@ -35,27 +50,23 @@
                 <label class="form-label">City</label>
                 <input type="text" class="form-control col-12 addressInput" id="city-input" name="city"
                     value='{{address.city}}' readonly>
+
+                {{!-- MAP --}}
+                <div id="petDisabledMap" class="col-12 map"></div>
+
             </label>
 
             <p><strong>Age:</strong> {{age}}</p>
             <p><strong>Gender:</strong> {{gender}}</p>
         </div>
 
-        <form action="/events" method="GET">
-            <button type="submit" class="btn btn-custom full-width col-12 col-sm-6 col-md-5">Events</button>
-        </form>
-
-        <form action="/events/add" method="GET">
-            <button type="submit" class="btn btn-custom full-width col-12 col-sm-6 col-md-5">New Event</button>
-        </form>
-
-        <form action="/profile/{{_id}}/edit" method="GET">
+        {{!-- <form action="/profile/{{_id}}/edit" method="GET">
             <button type="submit" class="btn btn-custom full-width col-12 col-sm-6 col-md-5">Edit</button>
         </form>
 
         <form action="/profile/{{_id}}/delete" method="POST">
             <button type="submit" class="btn btn-warning full-width col-12 col-sm-6 col-md-5">Delete</button>
-        </form>
+        </form> --}}
 
         {{#if ../errorMessage}}
         <div class="error col-12">{{../errorMessage}}</div>
@@ -65,7 +76,7 @@
 
 <div class="col-4 container-fluid">
     <a href="/messages">
-        <h2>Centro de mensajes</h2>
+        <h3>Centro de mensajes</h3>
     </a>
 
     <ul class="row">
@@ -88,7 +99,7 @@
 </div>
 {{/with}}
 
-<div id="petDisabledMap"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <script src="../../js/scriptmap.js"></script>

@@ -1,5 +1,5 @@
 <form class="col-6 container-fluid" action="/pets/{{pet._id}}/contact" method="POST">
-    <div class="row g-0">
+    <div class="row g-0 gy-2">
 
         <div class="mb-3 col-12">
             <label for="destinatary-input" class="form-label">To:</label>
@@ -14,6 +14,10 @@
 
 
         <button type="submit" class="btn btn-custom col-12">Send</button>
+
+        <div class="col-12">
+            <a href="/pets/{{pet._id}}" class="btn btn-light full-width">Go back</a>
+        </div>
 
         {{#if errorMessage}}
         <div class="error col-12">{{errorMessage}}</div>

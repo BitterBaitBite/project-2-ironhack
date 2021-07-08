@@ -1,13 +1,46 @@
+body {
+	height: 100%;
+	position: relative;
+	margin-bottom: 180px;
+	color: rgb(109, 118, 129);
+	/* background: url('../images/pngwing.com-3.png') repeat; */
+}
+
+input::placeholder {
+	color: rgb(130, 144, 153);
+}
+
+footer {
+	position: fixed;
+	width: 100%;
+	bottom: 0;
+}
+
 nav {
 	margin-bottom: 30px;
+	background: url('../images/pngwing.com-3.png') right/30% no-repeat;
 }
 
 h1 {
 	letter-spacing: 10px;
+	font-size: 3.4em;
 	text-transform: uppercase;
 	font-weight: 900;
-	color: rgb(83, 83, 83);
-	text-shadow: rgb(83, 83, 83, 0.3) -2px -2px;
+	color: rgb(68, 77, 85);
+	text-shadow: rgba(76, 79, 83, 0.3) -3px -3px;
+}
+
+h2 {
+	letter-spacing: 4px;
+	font-size: 2.5em;
+	font-weight: 700;
+	text-transform: uppercase;
+	color: rgb(68, 77, 85);
+	margin-bottom: 20px;
+}
+
+h3 {
+	font-size: 1.8em;
 }
 
 footer {
@@ -32,7 +65,7 @@ a {
 }
 
 a:hover {
-	color: rgb(173, 173, 173);
+	color: rgb(173, 173, 173, 0.8);
 }
 
 img {
@@ -44,21 +77,88 @@ img {
 	display: none;
 }
 
-.btn-custom {
-	background-color: rgb(209, 209, 209);
+.error {
+	width: 100%;
+	color: white;
+	background-color: rgb(233, 103, 27);
+	padding: 20px;
+	border-radius: 3px;
 }
 
-.pet-item {
+.btn-custom {
+	color: white;
+	background-color: rgba(154, 164, 168, 0.8);
+	border: white 2px solid;
+}
+
+.btn-warning {
+	color: white;
+}
+
+.warning-container {
 	padding: 15px;
-	color: rgba(122, 122, 122, 0.8);
+	background-color: #e5e5f7;
+	background-size: 6px 6px;
+	background-image: repeating-linear-gradient(45deg, #ff2a0020 0, #ff2c0020 0.6px, #e5e5f720 0, #e5e5f720 50%);
+	color: black;
+}
+
+.profile-details-container {
+	position: relative;
+	margin-top: 100px;
+}
+
+.all-list-img {
+	width: 180px;
+	height: 180px;
+	object-fit: cover;
+	border-radius: 100px;
+}
+
+.social-list-img {
+	text-align: center;
+	width: 150px;
+	height: 150px;
+	object-fit: cover;
+	border-radius: 100px;
+	margin: 15px auto;
+}
+
+.profile-details-img {
+	position: absolute;
+	right: 40px;
+	top: -80px;
+
+	width: 250px;
+	height: 250px;
+	object-fit: cover;
+
+	box-shadow: white 0px 20px 20px 10px;
+	border-radius: 150px;
+}
+
+.social-details-img {
+	width: 500px;
+	height: 500px;
+	border-radius: 150px;
+	object-fit: cover;
+
+	margin: 20px auto;
+}
+
+.pet-item,
+.event-item {
+	padding: 15px;
+	color: rgba(141, 141, 141, 0.8);
 	background-color: rgba(129, 129, 129, 0.1);
 	border-radius: 3px;
 	transition: all 0.3s ease-in-out;
 }
 
-.pet-item:hover {
-	color: rgb(122, 122, 122, 1);
-	background-color: rgb(129, 129, 129, 0.3);
+.pet-item:hover,
+.event-item:hover {
+	color: rgb(113, 122, 126);
+	background-color: rgba(130, 140, 150, 0.2);
 }
 
 .address-block {
@@ -68,11 +168,40 @@ img {
 	border-radius: 3px;
 }
 
+.origin-name {
+	font-weight: 500;
+	font-size: 1.1em;
+	color: rgb(73, 81, 90);
+}
+
+.message-container {
+	padding: 30px;
+	background: rgba(209, 215, 219, 0.2);
+	/* border: 1px solid rgba(209, 215, 219, 0.5); */
+	border-radius: 3px;
+}
+
+.message-label {
+	font-style: italic;
+	font-weight: 100;
+	padding-left: 10px;
+	margin-bottom: 5px;
+	color: rgb(80, 88, 97);
+}
+
 .description-block {
-	padding: 5px 10px;
+	color: rgb(51, 59, 65);
+	padding: 10px 15px;
 	background-color: rgba(202, 202, 202, 0.2);
 	border: 1px solid rgba(129, 129, 129, 0.2);
 	border-radius: 3px;
+}
+
+.map {
+	margin: 15px auto;
+	outline: 1px solid rgba(129, 129, 129, 0.2);
+	border: none;
+	border-radius: 5px;
 }
 
 label > span {
@@ -86,7 +215,7 @@ label > span {
 #mapTest,
 #petDisabledMap {
 	height: 200px;
-	background-color: greenyellow;
+	background-color: rgb(178, 240, 85);
 }
 
 /* Bootstrap classes tweaks */
@@ -104,6 +233,12 @@ label > span {
 .btn-warning:hover {
 	color: #ffc107;
 	border: 1px solid#ffcb2e;
+}
+
+.btn-light {
+	font-weight: 500;
+	color: rgb(122, 132, 139);
+	border: 2px solid rgb(146, 156, 163);
 }
 
 /* UTILITIES */

@@ -1,19 +1,32 @@
-<div class='col-8'>
-    <h1>Events:</h1>
-    <ul>
+<div class='col-8 container-fluid'>
+
+    <h2>Events</h2>
+
+    <ul class="row g-0 gy-2">
+
+        <form action="/profile/{{pet_id}}" method="GET" class="col-10 col-md-5">
+            <button type="submit" class="btn btn-light full-width ">Go back to my pet</button>
+        </form>
+
+        <div class="col-10 col-md-5">
+            <a href="/events/add" class="btn btn-custom full-width">Create event</a>
+        </div>
+
         {{#each events}}
-        <a href="/events/{{_id}}" class="event-item">
-            <li>
-                <h3>Event: {{activity}}</h3>
-                <p>Description: {{description}}</p>
-                <p>{{eventDate}}</p>
+        <div class="col-12">
+            <a href="/events/{{_id}}">
+                <li class=" event-item">
+                    <h3>{{activity}}</h3>
+                    <p>Description: {{description}}</p>
+                    <p>{{eventDate}}</p>
 
 
-                {{!-- <form action="/events/{{../pet_id}}/details/{{_id}}" method="GET">
-                    <button type="submit" class="btn btn-custom">See Details</button>
-                </form> --}}
-            </li>
-        </a>
+                    {{!-- <form action="/events/{{../pet_id}}/details/{{_id}}" method="GET">
+                        <button type="submit" class="btn btn-custom">See Details</button>
+                    </form> --}}
+                </li>
+            </a>
+        </div>
         {{/each}}
     </ul>
 </div>

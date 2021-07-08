@@ -1,16 +1,15 @@
 <div class="col-8 container-fluid">
-    <div class="row g-0">
+    <div class="row g-2 justify-content-between">
 
-        <div class="col-12">
-            <h1>{{title}}</h1>
-            {{#if isLogged}}
-            <h2>Welcome <span class="username">{{currentUser.username}}!</span></h2>
-            <a class="btn btn-custom col-12 col-sm-6 col-md-4" href="/logout">Log out</a>
-            {{else}}
-            <a class="btn btn-custom col-12 col-sm-6 col-md-4" href="/login">Log in</a>
-            <a class="btn btn-custom col-12 col-sm-6 col-md-4" href="/signup">Sign up</a>
-            {{/if}}
-        </div>
+        <h1>{{title}}</h1>
+        {{#if isLogged}}
+        <h2>Welcome <span class="username">{{currentUser.username}}!</span></h2>
+        <a class="btn btn-custom col-12 col-sm-5" href="/profile">Profile</a>
+        <a class="btn btn-custom col-12 col-sm-5" href="/logout">Log out</a>
+        {{else}}
+        <a class="btn btn-custom col-12 col-sm-5" href="/login">Log in</a>
+        <a class="btn btn-custom col-12 col-sm-5" href="/signup">Sign up</a>
+        {{/if}}
 
         {{#if errorMessage}}
         <div class="error col-12">{{errorMessage}}</div>

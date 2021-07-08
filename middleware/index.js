@@ -40,13 +40,20 @@ module.exports = {
 		}
 		next();
 	},
-};
 
-// checkRoles: (...roles) => (req, res, next) => {
-//     // console.log(`req.session.currentUser ${req.session.currentUser.role}`)
-//     if (roles.includes(req.session.currentUser.role)) {
-//         next()
-//     } else {
-//         res.render('auth/login-page', { errorMessage: `Restricted to ${roles}` })
-//     }
-// },
+	localsUpdate: (req, res, next) => {
+		if (req.session.user) {
+			res.locals.currentUser = req.session.user;
+			res.locals.isLogged = true;
+		}
+
+		if (req.session.pet) {
+			res.locals.currentPet = req.session.pet;
+			res.locals.isPetLogged = true;
+		}
+
+		res.locals.MAPS_KEY = process.env.MAPS_KEY;
+
+		next();
+	},
+};

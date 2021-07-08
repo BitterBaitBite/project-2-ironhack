@@ -1,13 +1,20 @@
 {{#with message}}
-<div class="col-10 container-fluid">
+<div class="col-8 container-fluid">
+    <div class="row g-0 message-container justify-content-center">
 
-    <p>Send by: <span class="origin-name">{{origin.name}}</span></p>
-    <p>{{body}}</p>
-    <p>At: {{date}}</p>
+        <div class="col-12">
+            <p><label class="message-label">Send by:</label> <span class="origin-name">{{origin.name}}</span></p>
 
-    <form action="/pets/{{origin._id}}/contact" method="GET">
-        <button type="submit" class="btn btn-custom full-width">Answer</button>
-    </form>
+            <label class="message-label">Message:</label>
+            <p class="description-block">{{body}}</p>
 
+            <p><label class="message-label">At:</label><span> {{date}}</span></p>
+        </div>
+
+        <form action="/pets/{{origin._id}}/contact" method="GET" class="col-12 col-sm-10 col-md-8 col-lg-6">
+            <button type="submit" class="btn btn-custom full-width">Answer</button>
+        </form>
+
+    </div>
 </div>
 {{/with}}

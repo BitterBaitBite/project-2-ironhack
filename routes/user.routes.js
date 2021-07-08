@@ -40,6 +40,10 @@ router.get('/', isLoggedIn, (req, res) => {
 });
 
 router.get('/new-pet', isLoggedIn, isPetLoggedOut, (req, res) => {
+	if (req.session.pet) {
+		delete req.session.pet;
+	}
+
 	res.render('user/new-pet');
 });
 
@@ -75,6 +79,10 @@ router.post('/new-pet', isLoggedIn, isPetLoggedOut, cdnUpload.single('profile_im
 // User Profile Edit
 
 router.get('/edit', isLoggedIn, isPetLoggedOut, (req, res) => {
+	if (req.session.pet) {
+		delete req.session.pet;
+	}
+
 	res.render('user/edit-user', { user: req.session.user });
 });
 
@@ -133,6 +141,10 @@ router.post('/edit', isLoggedIn, isPetLoggedOut, (req, res) => {
 //Delete user
 
 router.get('/delete', isLoggedIn, isPetLoggedOut, (req, res) => {
+	if (req.session.pet) {
+		delete req.session.pet;
+	}
+
 	res.render('user/delete-user');
 });
 
@@ -157,7 +169,7 @@ router.post('/delete', isLoggedIn, isPetLoggedOut, (req, res) => {
 		.catch((err) => errorValidation(res, err));
 });
 
-router.get('/:id', isLoggedIn, isPetLoggedOut, (req, res) => {
+router.get('/:id', isLoggedIn, (req, res) => {
 	const id = req.params.id;
 
 	if (!hasPet(req.session.user, req.params.id)) {
@@ -176,9 +188,7 @@ router.get('/:id', isLoggedIn, isPetLoggedOut, (req, res) => {
 			],
 		})
 		.then((pet) => {
-			// console.log('1', req.session.pet);
 			req.session.pet = pet;
-			// console.log('2', req.session.pet);
 			res.status(200).render('user/pet-details', { pet });
 		})
 		.catch((err) => errorValidation(res, err));

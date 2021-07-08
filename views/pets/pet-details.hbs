@@ -1,9 +1,12 @@
 <div class="col-6 container-fluid">
     <div class="row g-0 gy-2">
 
-        {{#with pet}}
+        <a href="/pets" class="btn btn-light col-3 ">Go back</a>
 
-        <img src='{{profile_img}}' alt="profile image" class="col-12">
+        {{#with pet}}
+        <div class="col-12 text-align-center">
+            <img src='{{profile_img}}' alt="profile image" class="col-12 social-details-img">
+        </div>
 
         <div class="col-12">
             <h2>{{name}}</h2>
@@ -23,9 +26,13 @@
         </div>
 
         <h3>Rating</h3>
-        <p class="starability-result" data-rating="{{../rating}}">
-            Rated: 3 stars
-        </p>
+        <div class="container-fluid">
+            <div class="row g-3">
+                <p class="starability-result col-6" data-rating="{{../rating}}">
+                    Rated: {{../rating}} stars
+                </p><span class="col-6">({{reviews.length}})</span>
+            </div>
+        </div>
 
         {{#unless ../isMod}}
         <form action="/pets/{{_id}}/contact" method="GET">

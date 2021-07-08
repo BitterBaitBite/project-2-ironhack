@@ -17,6 +17,10 @@ router.get('/:message_id', isLoggedIn, isPetLoggedIn, (req, res) => {
 	const { pet } = req.session;
 
 	Message.findById(req.params.message_id)
+		.populate({
+			path: 'origin',
+			select: 'name',
+		})
 		.then((message) => res.render('messages/message-details', { message }))
 		.catch((err) => errorValidation(res, err));
 });
