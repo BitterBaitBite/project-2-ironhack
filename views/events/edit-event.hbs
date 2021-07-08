@@ -1,61 +1,54 @@
-<div class="container">
-    <div class="row justify-content-center">
+<form class="col-6 container-fluid" action="/events/{{event._id}}/edit" method="POST">
+    <div class="row g-0">
+        {{#with event}}
 
-        <form class="col-6 container-fluid" action="/events/{{event._id}}/edit" method="POST">
-            <div class="row g-0">
-                {{#with event}}
+        <div class="mb-3 col-12">
+            <label for="date-input" class="form-label">Date</label>
+            <input type="date" class="form-control" id="date-input" aria-describedby="date-input" name="eventDate"
+                value="{{../fixedDate.date}}">
+        </div>
+        <div class="mb-3 col-12">
+            <label for="time-input" class="form-label">Time</label>
+            <input type="time" class="form-control" id="time-input" aria-describedby="time-input" name="eventTime"
+                value="{{../fixedDate.time}}">
+        </div>
 
-                <div class="mb-3 col-12">
-                    <label for="date-input" class="form-label">Date</label>
-                    <input type="date" class="form-control" id="date-input" aria-describedby="date-input"
-                        name="eventDate" value="{{../fixedDate.date}}">
-                </div>
-                <div class="mb-3 col-12">
-                    <label for="time-input" class="form-label">Time</label>
-                    <input type="time" class="form-control" id="time-input" aria-describedby="time-input"
-                        name="eventTime" value="{{../fixedDate.time}}">
-                </div>
+        <div class="mb-3 col-12">
+            <label for="activity-input" class="form-label">Activity</label>
+            <input type="text" class="form-control" id="activity-input" aria-describedby="activity-input"
+                name="activity" value="{{activity}}">
+        </div>
 
-                <div class="mb-3 col-12">
-                    <label for="activity-input" class="form-label">Activity</label>
-                    <input type="text" class="form-control" id="activity-input" aria-describedby="activity-input"
-                        name="activity" value="{{activity}}">
-                </div>
+        <div class="mb-3 col-12">
+            <label for="description-input" class="form-label">Description</label>
+            <textarea name="description" id="description-input" cols="30" rows="10"
+                class="form-control">{{description}}</textarea>
+        </div>
 
-                <div class="mb-3 col-12">
-                    <label for="description-input" class="form-label">Description</label>
-                    <textarea name="description" id="description-input" cols="30" rows="10"
-                        class="form-control">{{description}}</textarea>
-                </div>
+        <div class="mb-3 col-12 hidden">
+            <label class="form-label">Location
+                <input type="text" name="latitude" placeholder="Latitude" class="form-control"
+                    value='{{location.coordinates.[0]}}'>
+                <input type="text" name="longitude" placeholder="Longitude" class="form-control"
+                    value='{{location.coordinates.[1]}}'>
+            </label>
+        </div>
 
-                <div class="mb-3 col-12 hidden">
-                    <label class="form-label">Location
-                        <input type="text" name="latitude" placeholder="Latitude" class="form-control"
-                            value='{{location.coordinates.[0]}}'>
-                        <input type="text" name="longitude" placeholder="Longitude" class="form-control"
-                            value='{{location.coordinates.[1]}}'>
-                    </label>
-                </div>
+        {{!-- Google Maps API container --}}
+        <div id="map-container" class="col-12"></div>
 
-                {{!-- Google Maps API container --}}
-                <div id="map-container" class="col-12"></div>
+        {{/with}}
 
-                {{/with}}
+        <button type="submit" class="btn btn-custom col-12">Edit event</button>
 
-                <button type="submit" class="btn btn-custom col-12">Edit event</button>
-
-                {{#if errorMessage}}
-                <div class="error col-12">{{errorMessage}}</div>
-                {{/if}}
-
-            </div>
-        </form>
+        {{#if errorMessage}}
+        <div class="error col-12">{{errorMessage}}</div>
+        {{/if}}
 
     </div>
-</div>
+</form>
 
 <div id="mapTest"></div>
-
 
 <script src="../../js/scriptmap.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{MAPS_KEY}}&callback=initMap"></script>

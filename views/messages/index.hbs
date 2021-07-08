@@ -1,0 +1,27 @@
+{{#with pet}}
+<div class="col-10 container-fluid">
+
+    <h2>Centro de mensajes</h2>
+
+    <ul class="row">
+        {{#each messages}}
+        <div class="col-12">
+            <a href="/messages/{{_id}}">
+
+                <li class="message-item">
+                    <p>Send by: <span class="origin-name">{{origin.name}}</span></p>
+                    <p>{{body}}</p>
+                    <p>At: {{date}}</p>
+                </li>
+
+                <form action="/pets/{{origin._id}}/contact" method="GET">
+                    <button type="submit" class="btn btn-custom full-width">Answer</button>
+                </form>
+
+            </a>
+        </div>
+        {{/each}}
+    </ul>
+
+</div>
+{{/with}}

@@ -1,77 +1,71 @@
-<div class="container">
-    <div class="row gy-4 justify-content-center">
+{{#with user}}
 
-        {{#with user}}
+<div class="col-12 container-fluid">
+    <div class="row gy-2 justify-content-center text-align-center">
 
-        <div class="col-12 container-fluid">
-            <div class="row gy-2 justify-content-center text-align-center">
+        <div class="col-12">
+            <h2>Username:{{username}}</h2>
+            <p>Email: {{email}}</p>
 
-                <div class="col-12">
-                    <h2>Username:{{username}}</h2>
-                    <p>Email: {{email}}</p>
-
-                    {{#if ../isMod}}
-                    <p>Role:{{role}}</p>
-                    {{/if}}
-                </div>
-
-                <form action="/profile/edit" method="GET" class="col-12 col-sm-6 col-md-4">
-                    <button type="submit" class="btn btn-custom full-width">Edit</button>
-                </form>
-
-
-                <form action="/profile/delete" method="GET" class="col-12 col-sm-6 col-md-4">
-                    <button type="submit" class="btn btn-warning full-width">Delete</button>
-                </form>
-
-                <form action="/profile/new-pet" method="GET" class="col-12 col-md-8">
-                    <button type="submit" class="btn btn-custom full-width">New pet</button>
-                </form>
-            </div>
+            {{#if ../isMod}}
+            <p>Role:{{role}}</p>
+            {{/if}}
         </div>
 
-        <div class="col-12 container-fluid">
-            <ul class="row justify-content-evenly">
-                {{#each pets}}
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-                    <a href="/profile/{{_id}}">
-                        <li class="pet-item container-fluid">
-                            <div class="row g-0 gy-2">
-                                <div class="col-12">
-                                    <img src={{profile_img}} alt="profile image">
-                                    <h3>{{name}}</h3>
-                                    <p>{{species}}</p>
-                                    <p>Age: {{age}}</p>
-                                    <p>Gender: {{gender}}</p>
-                                </div>
+        <form action="/profile/edit" method="GET" class="col-12 col-sm-6 col-md-4">
+            <button type="submit" class="btn btn-custom full-width">Edit</button>
+        </form>
 
-                                {{!-- <form action="/profile/{{_id}}" method="GET">
-                                    <button type="submit"
-                                        class="btn btn-custom full-width col-12 col-sm-6 col-md-4">Details</button>
-                                </form> --}}
 
-                                <form action="/profile/{{_id}}/edit" method="GET">
-                                    <button type="submit"
-                                        class="btn btn-custom full-width col-12 col-sm-6 col-md-4">Edit</button>
-                                </form>
+        <form action="/profile/delete" method="GET" class="col-12 col-sm-6 col-md-4">
+            <button type="submit" class="btn btn-warning full-width">Delete</button>
+        </form>
 
-                                <form action="/profile/{{_id}}/delete" method="POST">
-                                    <button type="submit"
-                                        class="btn btn-warning full-width col-12 col-sm-6 col-md-4">Delete</button>
-                                </form>
-                            </div>
-                        </li>
-                    </a>
-                </div>
-                {{/each}}
-            </ul>
-        </div>
-
-        {{/with}}
-
-        {{#if errorMessage}}
-        <div class="error col-12">{{errorMessage}}</div>
-        {{/if}}
-
+        <form action="/profile/new-pet" method="GET" class="col-12 col-md-8">
+            <button type="submit" class="btn btn-custom full-width">New pet</button>
+        </form>
     </div>
 </div>
+
+<div class="col-12 container-fluid">
+    <ul class="row justify-content-evenly">
+        {{#each pets}}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
+            <a href="/profile/{{_id}}">
+                <li class="pet-item container-fluid">
+                    <div class="row g-0 gy-2">
+                        <div class="col-12">
+                            <img src={{profile_img}} alt="profile image">
+                            <h3>{{name}}</h3>
+                            <p>{{species}}</p>
+                            <p>Age: {{age}}</p>
+                            <p>Gender: {{gender}}</p>
+                        </div>
+
+                        {{!-- <form action="/profile/{{_id}}" method="GET">
+                            <button type="submit"
+                                class="btn btn-custom full-width col-12 col-sm-6 col-md-4">Details</button>
+                        </form> --}}
+
+                        <form action="/profile/{{_id}}/edit" method="GET">
+                            <button type="submit"
+                                class="btn btn-custom full-width col-12 col-sm-6 col-md-4">Edit</button>
+                        </form>
+
+                        <form action="/profile/{{_id}}/delete" method="POST">
+                            <button type="submit"
+                                class="btn btn-warning full-width col-12 col-sm-6 col-md-4">Delete</button>
+                        </form>
+                    </div>
+                </li>
+            </a>
+        </div>
+        {{/each}}
+    </ul>
+</div>
+
+{{/with}}
+
+{{#if errorMessage}}
+<div class="error col-12">{{errorMessage}}</div>
+{{/if}}

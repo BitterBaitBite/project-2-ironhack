@@ -1,0 +1,13 @@
+{{#with message}}
+<div class="col-10 container-fluid">
+
+    <p>Send by: <span class="origin-name">{{origin.name}}</span></p>
+    <p>{{body}}</p>
+    <p>At: {{date}}</p>
+
+    <form action="/pets/{{origin._id}}/contact" method="GET">
+        <button type="submit" class="btn btn-custom full-width">Answer</button>
+    </form>
+
+</div>
+{{/with}}

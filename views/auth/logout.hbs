@@ -1,1 +1,16 @@
-<p>Ha ocurrido un error inesperado al cerrar su sesión</p>
+<div class="col-10 container-fluid">
+    <div class="row g-0">
+
+        <div class="col-12">
+            <h2>Error!</h2>
+            <p>Ha ocurrido un error inesperado al cerrar su sesión</p>
+        </div>
+
+        {{#if errorMessage}}
+        <div class="error col-12">{{errorMessage}}</div>
+        {{/if}}
+
+        <a href="/" class="btn btn-custom col-12 full-width">Go back</a>
+
+    </div>
+</div>

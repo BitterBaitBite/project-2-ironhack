@@ -47,7 +47,7 @@ router.get('/:id', isLoggedIn, isPetLoggedIn, (req, res) => {
 	// const isMod = req.session.user.role == 'MODERATOR' || req.session.user.role == 'ADMIN';
 
 	Pet.findById(req.params.id)
-		.then((pet) => res.render('pets/pet-details', { pet, isMod: hasRole(req.session.user, 'MODERATOR', 'ADMIN' )}))
+		.then((pet) => res.render('pets/pet-details', { pet, isMod: hasRole(req.session.user, 'MODERATOR', 'ADMIN') }))
 		.catch((err) => errorValidation(res, err));
 });
 
@@ -93,7 +93,7 @@ router.post('/:id/contact', isLoggedIn, isPetLoggedIn, (req, res) => {
 	const { id } = req.params;
 
 	// BUG - El origin está metiendo al usuario
-	Message.create({ origin: req.session.user._id, destinatary: id, body, date: Date.now() }).then((message) => {
+	Message.create({ origin: req.session.pet._id, destinatary: id, body, date: Date.now() }).then((message) => {
 		//SI ESTO NOS DA ALGÚN PROBLEMA FUTURO, TENEMOS DEBAJO LA OTRA OPCIÓN (POR MODIFICAR)
 		Pet.findById(id)
 			.then((pet) => {

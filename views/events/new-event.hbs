@@ -1,61 +1,49 @@
-<div class="container">
-    <div class="row justify-content-center">
+<form class="col-6 container-fluid" action="/events/add" method="POST">
+    <div class="row g-0">
 
-        <form class="col-6 container-fluid" action="/events/add" method="POST">
-            <div class="row g-0">
+        <div class="mb-3 col-12">
+            <label for="date-input" class="form-label">Date</label>
+            <input type="date" class="form-control" id="date-input" aria-describedby="date-input" name="eventDate"
+                value="{{date}}">
+        </div>
 
-                <div class="mb-3 col-12">
-                    <label for="date-input" class="form-label">Date</label>
-                    <input type="date" class="form-control" id="date-input" aria-describedby="date-input"
-                        name="eventDate" value="{{date}}">
-                </div>
+        <div class="mb-3 col-12">
+            <label for="time-input" class="form-label">Time</label>
+            <input type="time" class="form-control" id="time-input" aria-describedby="time-input" name="eventTime"
+                value="{{time}}">
+        </div>
 
-                <div class="mb-3 col-12">
-                    <label for="time-input" class="form-label">Time</label>
-                    <input type="time" class="form-control" id="time-input" aria-describedby="time-input"
-                        name="eventTime" value="{{time}}">
-                </div>
+        <div class="mb-3 col-12">
+            <label for="activity-input" class="form-label">Activity</label>
+            <input type="text" class="form-control" id="activity-input" aria-describedby="activity-input"
+                name="activity">
+        </div>
 
-                <div class="mb-3 col-12">
-                    <label for="activity-input" class="form-label">Activity</label>
-                    <input type="text" class="form-control" id="activity-input" aria-describedby="activity-input"
-                        name="activity">
-                </div>
+        <div class="mb-3 col-12">
+            <label for="description-input" class="form-label">Description</label>
+            <textarea name="description" id="description-input" cols="30" rows="10" class="form-control"></textarea>
+        </div>
 
-                <div class="mb-3 col-12">
-                    <label for="description-input" class="form-label">Description</label>
-                    <textarea name="description" id="description-input" cols="30" rows="10"
-                        class="form-control"></textarea>
-                </div>
+        <div class="mb-3 col-12 container-fluid hidden">
+            <label class="form-label row g-0">Location
+                <input type="text" name="latitude" placeholder="Latitude" class="form-control col-6">
+                <input type="text" name="longitude" placeholder="Longitude" class="form-control col-6">
+            </label>
+        </div>
 
-                <div class="mb-3 col-12 container-fluid hidden">
-                    <label class="form-label row g-0">Location
-                        <input type="text" name="latitude" placeholder="Latitude" class="form-control col-6" >
-                        <input type="text" name="longitude" placeholder="Longitude" class="form-control col-6" >
-                    </label>
-                </div>
+        {{!-- Google Maps API container --}}
+        <div id="map-container" class="col-12"></div>
 
-                {{!-- Google Maps API container --}}
-                <div id="map-container" class="col-12"></div>
+        <button type="submit" class="btn btn-custom">Add event</button>
 
-                <button type="submit" class="btn btn-custom">Add event</button>
-
-                {{#if errorMessage}}
-                <div class="error col-12">{{errorMessage}}</div>
-                {{/if}}
-
-            </div>
-        </form>
+        {{#if errorMessage}}
+        <div class="error col-12">{{errorMessage}}</div>
+        {{/if}}
 
     </div>
-</div>
+</form>
 
 <div id="mapTest"></div>
 
-
 <script src="../js/scriptmap.js"></script>
 <script src="https://maps.googleapis.com/maps/api/js?key={{MAPS_KEY}}&callback=initMap"></script>
-
-{{!-- Google Maps API script --}}
-{{!--
-<script src="https://maps.googleapis.com/maps/api/js?key={{MAPS_KEY}}&callback=initMap"></script> --}}

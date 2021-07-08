@@ -1,67 +1,95 @@
-<div class="container">
-    <div class="row justify-content-center">
+{{#with pet}}
+<div class="col-8 container-fluid">
+    <div class="row g-0 gy-2">
 
-        <div class="col-8 container-fluid">
-            <div class="row g-0 gy-2">
 
-                {{#with pet}}
+        <img src='{{profile_img}}' alt="profile image">
 
-                <img src='{{profile_img}}' alt="profile image">
+        <div class="col-12">
+            <h2>{{name}}</h2>
 
-                <div class="col-12">
-                    <h2>{{name}}</h2>
+            <label><span>Description</span></label>
+            <p class="description-block">{{description}}</p>
 
-                    <label><span>Description</span></label>
-                    <p class="description-block">{{description}}</p>
+            <p><strong>Species:</strong> {{species}}</p>
 
-                    <p><strong>Species:</strong> {{species}}</p>
+            <label class="address-block full-width margin-bottom-2"><span>Address</span>
+                {{!-- <p>Street: <span>{{address.street}}</span></p>
+                <p>Postal: <span>{{address.postal}}</span></p>
+                <p>Number: <span>{{address.number}}</span></p>
+                <p>Country: <span>{{address.country}}</span></p>
+                <p>City: <span>{{address.city}}</span></p> --}}
 
-                    <label class="address-block full-width margin-bottom-2"><span>Address</span>
-                        <p>Street: {{address.street}}</p>
-                        <p>Postal: {{address.postal}}</p>
-                        <p>Number: {{address.number}}</p>
-                        <p>Country: {{address.country}}</p>
-                        <p>City: {{address.city}}</p>
-                    </label>
+                <label class="form-label full-width margin-bottom-2">Street</label>
+                <input type="text" class="form-control col-12 addressInput" id="street-input" name="street"
+                    value='{{address.street}}' readonly>
+                <label class="form-label">Postal</label>
+                <input type="text" class="form-control col-12 addressInput" id="postal-input" name="postal"
+                    value='{{address.postal}}' readonly>
+                <label class="form-label">Number</label>
+                <input type="number" class="form-control col-12 addressInput" id="number-input" name="number"
+                    value='{{address.number}}' readonly>
+                <label class="form-label">Country</label>
+                <input type="text" class="form-control col-12 addressInput" id="country-input" name="country"
+                    value='{{address.country}}' readonly>
+                <label class="form-label">City</label>
+                <input type="text" class="form-control col-12 addressInput" id="city-input" name="city"
+                    value='{{address.city}}' readonly>
+            </label>
 
-                    <p><strong>Age:</strong> {{age}}</p>
-                    <p><strong>Gender:</strong> {{gender}}</p>
-                </div>
-
-                <form action="/events" method="GET">
-                    <button type="submit" class="btn btn-custom full-width col-12 col-sm-6 col-md-5">Events</button>
-                </form>
-
-                <form action="/events/add" method="GET">
-                    <button type="submit" class="btn btn-custom full-width col-12 col-sm-6 col-md-5">New Event</button>
-                </form>
-
-                <form action="/profile/{{_id}}/edit" method="GET">
-                    <button type="submit" class="btn btn-custom full-width col-12 col-sm-6 col-md-5">Edit</button>
-                </form>
-
-                <form action="/profile/{{_id}}/delete" method="POST">
-                    <button type="submit" class="btn btn-warning full-width col-12 col-sm-6 col-md-5">Delete</button>
-                </form>
-
-                {{#if ../errorMessage}}
-                <div class="error col-12">{{errorMessage}}</div>
-                {{/if}}
-            </div>
+            <p><strong>Age:</strong> {{age}}</p>
+            <p><strong>Gender:</strong> {{gender}}</p>
         </div>
 
-        <div class="col-4">
-            <h2>Centro de mensajes</h2>
-            <ul>
-                {{#each messages}}
-                <li>
-                    {{_id}}{{body}}
-                </li>
-                {{/each}}
-            </ul>
+        <form action="/events" method="GET">
+            <button type="submit" class="btn btn-custom full-width col-12 col-sm-6 col-md-5">Events</button>
+        </form>
 
-            {{/with}}
+        <form action="/events/add" method="GET">
+            <button type="submit" class="btn btn-custom full-width col-12 col-sm-6 col-md-5">New Event</button>
+        </form>
 
-        </div>
+        <form action="/profile/{{_id}}/edit" method="GET">
+            <button type="submit" class="btn btn-custom full-width col-12 col-sm-6 col-md-5">Edit</button>
+        </form>
+
+        <form action="/profile/{{_id}}/delete" method="POST">
+            <button type="submit" class="btn btn-warning full-width col-12 col-sm-6 col-md-5">Delete</button>
+        </form>
+
+        {{#if ../errorMessage}}
+        <div class="error col-12">{{../errorMessage}}</div>
+        {{/if}}
     </div>
 </div>
+
+<div class="col-4 container-fluid">
+    <a href="/messages">
+        <h2>Centro de mensajes</h2>
+    </a>
+
+    <ul class="row">
+        {{#each messages}}
+        <div class="col-12">
+            <a href="/messages/{{_id}}">
+                <li class="message-item">
+                    <p>Send by: <span class="origin-name">{{origin.name}}</span></p>
+                    <p>{{body}}</p>
+                    <p>At: {{date}}</p>
+                </li>
+            </a>
+        </div>
+
+        <hr>
+        {{/each}}
+    </ul>
+
+
+</div>
+{{/with}}
+
+<div id="petDisabledMap"></div>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script src="../../js/scriptmap.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{MAPS_KEY}}&callback=initGeocoderDisMap"></script>

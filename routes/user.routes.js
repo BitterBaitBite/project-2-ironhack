@@ -14,15 +14,14 @@ const saltRounds = 10;
 
 const Pet = require('../models/Pet.model');
 const User = require('../models/User.model');
-const {isLoggedIn, isPetLoggedIn, isPetLoggedOut} = require('../middleware/');
+const { isLoggedIn, isPetLoggedIn, isPetLoggedOut } = require('../middleware/');
 const { errorValidation, hasPet, hasRole } = require('../utils/');
-
 
 router.get('/', isLoggedIn, (req, res) => {
 	const sessionUser = req.session.user;
 
-	if( req.session.pet ){
-		delete req.session.pet
+	if (req.session.pet) {
+		delete req.session.pet;
 	}
 	// const isMod = sessionUser.role == 'MODERATOR' || sessionUser.role == 'ADMIN';
 
@@ -31,7 +30,8 @@ router.get('/', isLoggedIn, (req, res) => {
 		.then((user) => {
 			if (!user) res.status(400).redirect('/login');
 			res.status(200).render('user', {
-				user, isMod: hasRole(req.session.user, 'MODERATOR', 'ADMIN'),
+				user,
+				isMod: hasRole(req.session.user, 'MODERATOR', 'ADMIN'),
 			});
 		})
 		.catch((err) => errorValidation(res, err));
@@ -145,8 +145,7 @@ router.post('/delete', isLoggedIn, isPetLoggedOut, (req, res) => {
 
 	Promise.all([deletePets, deleteUser])
 
-		.then((pets, user) => console.log(pets, user))
-		.then(() =>
+		.then((pets, user) =>
 			req.session.destroy((err) => {
 				if (err) return res.status(500).render('user/', { errorMessage: err.message });
 
@@ -159,16 +158,26 @@ router.post('/delete', isLoggedIn, isPetLoggedOut, (req, res) => {
 router.get('/:id', isLoggedIn, isPetLoggedOut, (req, res) => {
 	const id = req.params.id;
 
-
 	if (!hasPet(req.session.user, req.params.id)) {
 		res.status(401).render('user/', { errorMessage: 'Not authorized for that pet' });
 		return;
 	}
 
 	Pet.findById(id)
+		.populate({
+			path: 'messages',
+			populate: [
+				{
+					path: 'origin',
+					select: 'name',
+				},
+			],
+		})
 		.then((pet) => {
-			req.session.pet = pet
-			res.status(200).render('user/pet-details', { pet })
+			// console.log('1', req.session.pet);
+			req.session.pet = pet;
+			// console.log('2', req.session.pet);
+			res.status(200).render('user/pet-details', { pet });
 		})
 		.catch((err) => errorValidation(res, err));
 });
@@ -189,6 +198,8 @@ router.get('/:id/edit', isLoggedIn, (req, res) => {
 router.post('/:id/edit', isLoggedIn, (req, res) => {
 	const { name, description, species, age, gender, profile_img, street, postal, number, country, city } = req.body;
 	const address = { street, postal, number, country, city };
+
+	console.log('hola');
 
 	if (!hasPet(req.session.user, req.params.id)) {
 		res.status(401).render('user/', { errorMessage: 'Not authorized for that pet' });

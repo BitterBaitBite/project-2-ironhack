@@ -1,2 +1,14 @@
-<h1>Error!</h1>
-<h2>There was an error on the server! Check the console!</h2>
+<div class="col-10 container-fluid">
+    <div class="row g-0">
+
+        <div class="col-12">
+            <h1>Error!</h1>
+            <h2>There was an error on the server! Check the console!</h2>
+        </div>
+
+        {{#if errorMessage}}
+        <div class="error col-12">{{errorMessage}}</div>
+        {{/if}}
+
+    </div>
+</div>

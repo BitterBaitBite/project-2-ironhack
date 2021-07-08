@@ -1,7 +1,17 @@
-<h1>404 Error</h1>
-<h2>This route does not exist on the app! Check if everything is ok! Check your routes to see what might have happened
-</h2>
+<div class="col-10 container-fluid">
+    <div class="row g-0">
 
-{{#if errorMessage}}
-<p>{{errorMessage}}</p>
-{{/if}}
+        <div class="col-12">
+            <h2>404 Error</h2>
+            <h3>This route does not exist on the app! Check if everything is ok! Check your routes to see what might
+                have
+                happened
+            </h3>
+        </div>
+
+        {{#if errorMessage}}
+        <div class="error col-12">{{errorMessage}}</div>
+        {{/if}}
+
+    </div>
+</div>
