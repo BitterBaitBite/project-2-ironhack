@@ -1,5 +1,5 @@
 <div class="col-6 container-fluid">
-    <div class="row g-0">
+    <div class="row g-0 gy-2 justify-content-between">
 
         {{#with event}}
 
@@ -24,8 +24,7 @@
         <div class="mb-3 col-12">
             <label for="activity" for="description" class="form-label">Activity: {{activity}}</label>
             <textarea name="activity, description" id="activity, description" cols="30" rows="10" class="form-control"
-                disabled>
-                    {{description}}</textarea>
+                disabled>{{description}}</textarea>
         </div>
 
         <div class="mb-3 col-12 hidden">
@@ -43,23 +42,25 @@
         {{/with}}
 
         {{#unless isOwner}}
-        <form action="/events/{{event_id}}/edit" method="get" class="col-12 col-sm-6 col-md-4">
-            <button type="submit" class="btn btn-custom">Edit</button>
+        <form action="/events/{{event_id}}/edit" method="get" class="col-12 col-sm-6 col-lg-4">
+            <button type="submit" class="btn btn-custom full-width">Edit</button>
         </form>
         {{/unless}}
         {{#unless isEnroled}}
-        <form action="/events/{{event_id}}/join" method="post" class="col-12 col-sm-6 col-md-4">
-            <button type="submit" class="btn btn-custom">Join</button>
+        <form action="/events/{{event_id}}/join" method="post" class="col-12 col-sm-6 col-lg-4">
+            <button type="submit" class="btn btn-custom full-width">Join</button>
         </form>
         {{else}}
-        <form action="/events/{{event_id}}/quit" method="post" class="col-12 col-sm-6 col-md-4">
-            <button type="submit" class="btn btn-custom">Quit</button>
+        <form action="/events/{{event_id}}/quit" method="post" class="col-12 col-sm-6 col-lg-4">
+            <button type="submit" class="btn btn-custom full-width">Quit</button>
         </form>
         {{/unless}}
 
         {{#if errorMessage}}
         <div class="error col-12">{{errorMessage}}</div>
         {{/if}}
+
+        <a href="/events" class="btn btn-custom full-width">Go back</a>
 
     </div>
 </div>

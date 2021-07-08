@@ -22,10 +22,21 @@
             <p>Gender: {{gender}}</p>
         </div>
 
+        <h3>Rating</h3>
+        <p class="starability-result" data-rating="{{../rating}}">
+            Rated: 3 stars
+        </p>
+
         {{#unless ../isMod}}
         <form action="/pets/{{_id}}/contact" method="GET">
             <button type="submit" class="btn btn-custom full-width col-12">Contact</button>
         </form>
+
+        {{#unless ../hasReview}}
+        <form action="/pets/{{_id}}/review" method="GET">
+            <button type="submit" class="btn btn-custom full-width col-12">Review</button>
+        </form>
+        {{/unless}}
 
         {{else}}
         <form action="/pets/{{_id}}/edit" method="GET">

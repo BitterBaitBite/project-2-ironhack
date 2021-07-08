@@ -1,4 +1,4 @@
-<form class="col-8" action="new-pet" method="POST">
+<form class="col-8" action="new-pet" method="POST" enctype="multipart/form-data">
     <div class="mb-3">
         <label for="name-input" class="form-label">Name</label>
         <input type="text" class="form-control" id="name-input" aria-describedby="name-input" name="name">
@@ -45,7 +45,7 @@
 
     <div class="mb-3">
         <label for="profile-img-input" class="form-label">Profile image</label>
-        <input type="text" class="form-control" id="profile-img-input" name="profile_img">
+        <input type="file" class="form-control" id="profile-img-input" name="profile_img">
     </div>
 
     <button type="submit" class="btn btn-custom">Add</button>

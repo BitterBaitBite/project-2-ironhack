@@ -1,15 +1,12 @@
-// -   /pets
-// -   /pets?filters (admin can filter by owner user)
-// -   /pets/:id (get)
-// -   /pets/:id/contact (get, post)
-// -   /pets/:id/edit (get, post)(admin only, moderator for reviews)
-// -   /pets/:id/delete (post)(admin only)
 const router = require('express').Router();
 
 const Pet = require('../models/Pet.model');
-const { isLoggedIn, roleCheck, isPetLoggedIn } = require('../middleware/');
 const Message = require('../models/Message.model');
-const { errorValidation, hasRole } = require('../utils/');
+const Review = require('../models/Review.model');
+
+const { isLoggedIn, roleCheck, isPetLoggedIn } = require('../middleware/');
+const { errorValidation, hasRole, hasReview, calcRating } = require('../utils/');
+const cdnUpload = require('../config/fileUpload.config');
 
 router.get('/', isLoggedIn, isPetLoggedIn, (req, res) => {
 	const addressProperties = ['street', 'postal', 'number', 'country', 'city'];
@@ -29,6 +26,8 @@ router.get('/', isLoggedIn, isPetLoggedIn, (req, res) => {
 		return result;
 	}, {});
 
+	if (req.session.pet) result._id = { $ne: req.session.pet._id };
+
 	Pet.find(result)
 		.then((pets) => {
 			const filteredPets = pets.filter((pet) => {
@@ -44,10 +43,22 @@ router.get('/', isLoggedIn, isPetLoggedIn, (req, res) => {
 });
 
 router.get('/:id', isLoggedIn, isPetLoggedIn, (req, res) => {
-	// const isMod = req.session.user.role == 'MODERATOR' || req.session.user.role == 'ADMIN';
-
 	Pet.findById(req.params.id)
-		.then((pet) => res.render('pets/pet-details', { pet, isMod: hasRole(req.session.user, 'MODERATOR', 'ADMIN') }))
+		.populate({
+			path: 'reviews',
+			select: 'origin rating',
+		})
+		.then((pet) => {
+			const rating = calcRating(pet.reviews);
+			console.log(rating);
+
+			res.render('pets/pet-details', {
+				pet,
+				isMod: hasRole(req.session.user, 'MODERATOR', 'ADMIN'),
+				hasReview: req.session.pet ? hasReview(pet.reviews, req.session.pet) : false,
+				rating,
+			});
+		})
 		.catch((err) => errorValidation(res, err));
 });
 
@@ -57,18 +68,21 @@ router.get('/:id/edit', isLoggedIn, roleCheck('ADMIN', 'MODERATOR'), (req, res) 
 		.catch((err) => errorValidation(res, err));
 });
 
-router.post('/:id/edit', isLoggedIn, roleCheck('ADMIN', 'MODERATOR'), (req, res) => {
-	const { name, description, species, age, gender, profile_img, street, postal, number, country, city } = req.body;
+router.post('/:id/edit', isLoggedIn, roleCheck('ADMIN', 'MODERATOR'), cdnUpload.single('profile_img'), (req, res) => {
+	const { name, description, species, age, gender, street, postal, number, country, city } = req.body;
 	const address = { street, postal, number, country, city };
 
 	Pet.findById(req.params.id)
 		.then((pet) => {
-			// if (!user.pets.includes(String(pet._id))) {
-			// 	res.status(401).render(`pets/pet-details`, {  errorMessage: 'Not authorized for that pet' });
-			// 	return;
-			// }
-
-			return Pet.findByIdAndUpdate(req.params.id, { name, description, species, address, age, gender, profile_img });
+			return Pet.findByIdAndUpdate(req.params.id, {
+				name,
+				description,
+				species,
+				address,
+				age,
+				gender,
+				profile_img: req.file.path,
+			});
 		})
 		.then((pet) => res.status(200).redirect(`/pets/${req.params.id}`))
 		.catch((err) => errorValidation(res, err));
@@ -80,7 +94,7 @@ router.post('/:id/delete', isLoggedIn, roleCheck('ADMIN'), (req, res) => {
 		.catch((err) => errorValidation(res, err));
 });
 
-router.get('/:id/contact', isLoggedIn, isPetLoggedIn, (req, res) => {
+router.get('/:id/contact', isLoggedIn, isPetLoggedIn, roleCheck('OWNER'), (req, res) => {
 	const { id } = req.params;
 
 	Pet.findById(id)
@@ -88,27 +102,50 @@ router.get('/:id/contact', isLoggedIn, isPetLoggedIn, (req, res) => {
 		.catch((err) => errorValidation(res, err));
 });
 
-router.post('/:id/contact', isLoggedIn, isPetLoggedIn, (req, res) => {
+router.post('/:id/contact', isLoggedIn, isPetLoggedIn, roleCheck('OWNER'), (req, res) => {
 	const { body } = req.body;
 	const { id } = req.params;
 
-	// BUG - El origin está metiendo al usuario
-	Message.create({ origin: req.session.pet._id, destinatary: id, body, date: Date.now() }).then((message) => {
-		//SI ESTO NOS DA ALGÚN PROBLEMA FUTURO, TENEMOS DEBAJO LA OTRA OPCIÓN (POR MODIFICAR)
-		Pet.findById(id)
-			.then((pet) => {
-				pet.messages.push(message._id);
-				return pet.save();
-			})
-			.then((pet) => {
-				res.render('pets/pet-details', { pet });
-			})
-			.catch((err) => errorValidation(res, err));
+	Message.create({ origin: req.session.pet._id, destinatary: id, body, date: Date.now() })
+		.then((message) => Pet.findByIdAndUpdate(id, { $push: { messages: message._id } }, { new: true }))
+		.then((pet) => {
+			req.session.pet.messages.push(message._id);
+			res.render('pets/pet-details', { pet });
+		})
+		.catch((err) => errorValidation(res, err));
+});
 
-		// Pet.findById(id)
-		// .then((pet) => Pet.findByIdAndUpdate(id, { messages: pet.messages.push(message._id) }, { new: true }))
-		// .then((pet) => console.log(message, pet))
-	});
+router.get('/:id/review', isLoggedIn, isPetLoggedIn, roleCheck('OWNER', 'MODERATOR'), (req, res) => {
+	const { id } = req.params;
+
+	Pet.findById(id)
+		.populate({
+			path: 'reviews',
+			select: 'origin',
+		})
+		.then((pet) => {
+			res.render('pets/review-pet', { pet, hasReview: req.session.pet ? hasReview(pet.reviews, req.session.pet) : false });
+		})
+		.catch((err) => errorValidation(res, err));
+});
+
+router.post('/:id/review', isLoggedIn, isPetLoggedIn, roleCheck('OWNER', 'MODERATOR'), (req, res) => {
+	const { body, rating } = req.body;
+	const { id } = req.params;
+
+	Review.create({
+		origin: req.session.pet._id,
+		destinatary: id,
+		body,
+		date: Date.now(),
+		rating,
+	})
+		.then((review) => {
+			req.session.pet.reviews.push(review._id);
+			return Pet.findByIdAndUpdate(id, { $push: { reviews: review._id } }, { new: true });
+		})
+		.then(() => res.redirect(`/pets/${id}`))
+		.catch((err) => errorValidation(res, err));
 });
 
 module.exports = router;

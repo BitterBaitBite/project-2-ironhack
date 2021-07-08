@@ -2,15 +2,11 @@ function initMap() {
 	const elmLng = document.querySelector("input[name = 'latitude']");
 	const elmLat = document.querySelector("input[name = 'longitude']");
 	let marker = undefined;
+
 	const eventMap = new google.maps.Map(document.querySelector('#mapTest'), {
 		zoom: 16,
 		center: { lat: 40.392499, lng: -3.698214 },
-		// styles: mapStyles.electric
 	});
-
-	// google.maps.event.addListener(eventMap, 'click', function (event) {
-	//     placeMarker(event.latLng);
-	// });
 
 	google.maps.event.addListener(eventMap, 'click', function (event) {
 		console.log(eventMap);
@@ -28,19 +24,6 @@ function initMap() {
 		elmLat.value = latitude;
 		elmLng.value = longitude;
 
-		// radius = new google.maps.Circle({
-		//     map: eventMap,
-		//     radius: 500,
-		//     center: event.latLng,
-		//     fillColor: '#777',
-		//     fillOpacity: 0.1,
-		//     strokeColor: '#AA0000',
-		//     strokeOpacity: 0.8,
-		//     strokeWeight: 2,
-		//     draggable: true,    // Dragable
-		//     editable: true      // Resizable
-		// });
-
 		// Center of map
 		eventMap.panTo(new google.maps.LatLng(latitude, longitude));
 	});
@@ -54,7 +37,6 @@ function initDetailsMap() {
 	const detailsMap = new google.maps.Map(document.querySelector('#untouchableMap'), {
 		zoom: 16,
 		center: { lat: elmLat, lng: elmLng },
-		// styles: mapStyles.electric
 	});
 
 	marker = new google.maps.Marker({
@@ -96,12 +78,12 @@ function initGeocoderMap() {
 	// // Api data
 	// petMap = new google.maps.Map(document.querySelector('#petEnabledMap'), {
 	// 	zoom: 16,
-	// 	center: prevLocation,
+	// 	center: { lat: 40.392499, lng: -3.698214 },
 	// });
 
 	// marker = new google.maps.Marker({
 	// 	map: petMap,
-	// 	position: prevLocation,
+	// 	position: { lat: 40.392499, lng: -3.698214 },
 	// });
 	// //
 
@@ -116,20 +98,24 @@ function initGeocoderMap() {
 
 				const fullAddress = apiString + address + apiKey;
 
-				axios.get(fullAddress).then((response) => {
-					console.log(response.data.results[0].geometry.location);
-					let { location } = response.data.results[0].geometry;
+				console.log(fullAddress);
 
-					petMap = new google.maps.Map(document.querySelector('#petEnabledMap'), {
-						zoom: 18,
-						center: location,
-					});
+				axios
+					.get(fullAddress)
+					.then((response) => {
+						let { location } = response.data.results[0].geometry;
 
-					marker = new google.maps.Marker({
-						map: petMap,
-						position: location,
-					});
-				});
+						petMap = new google.maps.Map(document.querySelector('#petEnabledMap'), {
+							zoom: 18,
+							center: location,
+						});
+
+						marker = new google.maps.Marker({
+							map: petMap,
+							position: location,
+						});
+					})
+					.catch((err) => console.error(err));
 			})
 	);
 }
@@ -147,20 +133,22 @@ initGeocoderDisMap = () => {
 	const apiStr = `https://maps.googleapis.com/maps/api/geocode/json?address=`;
 	const fullStr = apiStr + addStr + keyStr;
 
-	axios.get(fullStr).then((response) => {
-		console.log(response);
-		if (response.data.results.length > 0) {
-			location = response.data.results[0].geometry.location;
-		}
+	axios
+		.get(fullStr)
+		.then((response) => {
+			if (response.data.results.length > 0) {
+				location = response.data.results[0].geometry.location;
+			}
 
-		let petMap = new google.maps.Map(document.querySelector('#petDisabledMap'), {
-			zoom: 18,
-			center: location,
-		});
+			let petMap = new google.maps.Map(document.querySelector('#petDisabledMap'), {
+				zoom: 18,
+				center: location,
+			});
 
-		let marker = new google.maps.Marker({
-			map: petMap,
-			position: location,
-		});
-	});
+			let marker = new google.maps.Marker({
+				map: petMap,
+				position: location,
+			});
+		})
+		.catch((err) => console.error(err));
 };

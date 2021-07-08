@@ -14,8 +14,10 @@ const saltRounds = 10;
 
 const Pet = require('../models/Pet.model');
 const User = require('../models/User.model');
+
 const { isLoggedIn, isPetLoggedIn, isPetLoggedOut } = require('../middleware/');
 const { errorValidation, hasPet, hasRole } = require('../utils/');
+const cdnUpload = require('../config/fileUpload.config');
 
 router.get('/', isLoggedIn, (req, res) => {
 	const sessionUser = req.session.user;
@@ -41,9 +43,9 @@ router.get('/new-pet', isLoggedIn, isPetLoggedOut, (req, res) => {
 	res.render('user/new-pet');
 });
 
-router.post('/new-pet', isLoggedIn, isPetLoggedOut, (req, res) => {
+router.post('/new-pet', isLoggedIn, isPetLoggedOut, cdnUpload.single('profile_img'), (req, res) => {
 	const sessionUser = req.session.user;
-	const { name, description, species, age, gender, profile_img, street, postal, number, country, city } = req.body;
+	const { name, description, species, age, gender, street, postal, number, country, city } = req.body;
 	const address = { street, postal, number, country, city };
 
 	if (!name) {
@@ -60,7 +62,7 @@ router.post('/new-pet', isLoggedIn, isPetLoggedOut, (req, res) => {
 				}
 			});
 			if (exists) return res.status(400).render('user/new-pet', { errorMessage: 'You have already a pet with that name' });
-			else return Pet.create({ name, description, species, address, age, gender, profile_img });
+			else return Pet.create({ name, description, species, address, age, gender, profile_img: req.file.path });
 		})
 		.then((pet) => User.findByIdAndUpdate(sessionUser._id, { $push: { pets: pet._id } }, { new: true }))
 		.then((user) => {
@@ -195,18 +197,24 @@ router.get('/:id/edit', isLoggedIn, (req, res) => {
 		.catch((err) => errorValidation(res, err));
 });
 
-router.post('/:id/edit', isLoggedIn, (req, res) => {
-	const { name, description, species, age, gender, profile_img, street, postal, number, country, city } = req.body;
+router.post('/:id/edit', isLoggedIn, cdnUpload.single('profile_img'), (req, res) => {
+	const { name, description, species, age, gender, street, postal, number, country, city } = req.body;
 	const address = { street, postal, number, country, city };
-
-	console.log('hola');
 
 	if (!hasPet(req.session.user, req.params.id)) {
 		res.status(401).render('user/', { errorMessage: 'Not authorized for that pet' });
 		return;
 	}
 
-	Pet.findByIdAndUpdate(req.params.id, { name, description, species, age, gender, profile_img, address })
+	Pet.findByIdAndUpdate(req.params.id, {
+		name,
+		description,
+		species,
+		age,
+		gender,
+		address,
+		profile_img: req.file.path,
+	})
 		.then(() => res.status(200).redirect('/profile'))
 		.catch((err) => errorValidation(res, err));
 });

@@ -35,6 +35,11 @@ a:hover {
 	color: rgb(173, 173, 173);
 }
 
+img {
+	width: 100%;
+	object-fit: contain;
+}
+
 .hidden {
 	display: none;
 }
