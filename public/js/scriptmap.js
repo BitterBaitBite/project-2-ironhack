@@ -1,5 +1,3 @@
-const { errorValidation } = require('../../utils');
-
 let MAPS_KEY;
 
 axios.get('/api/key').then((response) => {
@@ -116,7 +114,7 @@ function initGeocoderMap() {
 							position: location,
 						});
 					})
-					.catch((err) => errorValidation(err));
+					.catch((err) => console.error(err));
 			})
 	);
 }
@@ -149,5 +147,5 @@ initGeocoderDisMap = () => {
 				position: location,
 			});
 		})
-		.catch((err) => errorValidation(err));
+		.catch((err) => console.error(err));
 };
