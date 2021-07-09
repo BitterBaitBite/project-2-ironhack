@@ -75,7 +75,7 @@ router.get('/:event_id', isLoggedIn, isPetLoggedIn, (req, res) => {
 		.then((event) => {
 			console.log(event);
 
-			const isOwner = req.session.pet && event.creator == req.session.pet._id;
+			const isOwner = req.session.pet && event.creator.equals(req.session.pet._id);
 			const isEnroled = event.participants.some((pet) => pet._id == pet_id);
 
 			console.log(isOwner);
