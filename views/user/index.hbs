@@ -21,12 +21,23 @@
             <button type="submit" class="btn btn-warning full-width">Delete</button>
         </form>
 
+        {{#unless ../isMod }}
+
         <form action="/profile/new-pet" method="GET" class="col-12 col-md-8">
             <button type="submit" class="btn btn-custom full-width">New pet</button>
         </form>
+        {{else}}
+        <form action="/pets" method="GET" class="col-12 col-md-8">
+            <button type="submit" class="btn btn-custom full-width">Pets list</button>
+        </form>
+        <form action="/events" method="GET" class="col-12 col-md-8">
+            <button type="submit" class="btn btn-custom full-width">Events</button>
+        </form>
+
+        {{/unless}}
     </div>
 </div>
-
+{{#unless ../isMod }}
 <div class="col-8">
     <hr>
 </div>
@@ -64,6 +75,7 @@
         {{/each}}
     </ul>
 </div>
+{{/unless }}
 
 {{/with}}
 

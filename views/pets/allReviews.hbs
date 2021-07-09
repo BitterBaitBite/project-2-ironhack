@@ -1,0 +1,22 @@
+<form class="col-6 container-fluid" action="/pets/{{pet._id}}/review" method="POST">
+    <div class="row g-0">
+
+        {{#with pet}}
+        <ul>
+            {{#each reviews}}
+            <div class="col-12">
+                <a href="/pets/{{../_id}}/reviews/{{_id}}">
+                    <li>
+                        {{creator}} | {{body}} | {{date}} | {{rating}}
+                    </li>
+                </a>
+            </div>
+            {{/each}}
+        </ul>
+        {{/with}}
+        {{#if errorMessage}}
+        <div class="error col-12">{{errorMessage}}</div>
+        {{/if}}
+
+    </div>
+</form>

@@ -1,0 +1,30 @@
+{{#with review}}
+
+{{destinatary._id}}
+<form class="col-6 container-fluid" action="/pets/{{destinatary._id}}/reviews/{{_id}}/edit" method="POST">
+    <div class="row g-0">
+
+
+
+        <h3>{{destinatary.name}}</h3>
+
+        <div class="mb-3 col-12">
+            <label for="body-input" class="form-label">Message</label>
+            <textarea name="body" id="body-input" cols="30" rows="10" class="form-control">{{body}}</textarea>
+        </div>
+
+
+
+        <button type="submit" class="btn btn-custom full-width col-12">Update</button>
+
+
+    </div>
+</form>
+
+<form class="col-6 container-fluid" action="/pets/{{destinatary._id}}/reviews/{{_id}}/delete" method="POST">
+    <button type="submit" class="btn btn-custom full-width">Delete</button>
+</form>
+{{/with}}
+{{#if errorMessage}}
+<div class="error col-12">{{errorMessage}}</div>
+{{/if}}

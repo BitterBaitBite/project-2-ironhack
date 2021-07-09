@@ -41,11 +41,17 @@
 
         {{/with}}
 
-        {{#unless isOwner}}
+
+        {{#if isOwner}}
         <form action="/events/{{event_id}}/edit" method="get" class="col-12 col-sm-6 col-lg-4">
             <button type="submit" class="btn btn-custom full-width">Edit</button>
         </form>
-        {{/unless}}
+        {{/if}}
+        {{#if isMod}}
+        <form action="/events/{{event_id}}/edit" method="get" class="col-12 col-sm-6 col-lg-4">
+            <button type="submit" class="btn btn-custom full-width">Edit</button>
+        </form>
+        {{else}}
         {{#unless isEnroled}}
         <form action="/events/{{event_id}}/join" method="post" class="col-12 col-sm-6 col-lg-4">
             <button type="submit" class="btn btn-custom full-width">Join</button>
@@ -55,6 +61,7 @@
             <button type="submit" class="btn btn-custom full-width">Quit</button>
         </form>
         {{/unless}}
+        {{/if}}
 
         {{#if errorMessage}}
         <div class="error col-12">{{errorMessage}}</div>

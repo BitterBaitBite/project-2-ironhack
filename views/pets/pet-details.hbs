@@ -46,14 +46,23 @@
         {{/unless}}
 
         {{else}}
+
+
+        <form action="/pets/{{_id}}/reviews" method="GET">
+            <button type="submit" class="btn btn-custom full-width col-12 col-md-4">Reviews</button>
+        </form>
+
+
         <form action="/pets/{{_id}}/edit" method="GET">
             <button type="submit" class="btn btn-custom full-width col-12 col-sm-6 col-md-4">Edit</button>
         </form>
 
         <form action="/pets/{{_id}}/delete" method="POST">
-            <button type="submit" class="btn btn-warning full-width col-12 col-sm-6 col-md-5">Delete</button>
+            <button type="submit" class="btn btn-warning full-width col-12 col-sm-6 col-md-4">Delete</button>
         </form>
         {{/unless}}
+
+
 
         {{/with}}
 

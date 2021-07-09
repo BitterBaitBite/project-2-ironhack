@@ -3,14 +3,19 @@
     <h2>Events</h2>
 
     <ul class="row g-0 gy-2">
-
+        {{#unless isMod}}
         <form action="/profile/{{pet_id}}" method="GET" class="col-10 col-md-5">
             <button type="submit" class="btn btn-light full-width ">Go back to my pet</button>
         </form>
-
         <div class="col-10 col-md-5">
             <a href="/events/add" class="btn btn-custom full-width">Create event</a>
         </div>
+        {{else}}
+        <form action="/profile" method="GET" class="col-10 col-md-5">
+            <button type="submit" class="btn btn-light full-width ">Go Back</button>
+        </form>
+        {{/unless}}
+
 
         {{#each events}}
         <div class="col-12">

@@ -15,7 +15,7 @@ const saltRounds = 10;
 const Pet = require('../models/Pet.model');
 const User = require('../models/User.model');
 
-const { isLoggedIn, isPetLoggedIn, isPetLoggedOut } = require('../middleware/');
+const { isLoggedIn, isPetLoggedIn, isPetLoggedOut, roleCheck } = require('../middleware/');
 const { errorValidation, hasPet, hasRole } = require('../utils/');
 const cdnUpload = require('../config/fileUpload.config');
 
@@ -39,7 +39,7 @@ router.get('/', isLoggedIn, (req, res) => {
 		.catch((err) => errorValidation(res, err));
 });
 
-router.get('/new-pet', isLoggedIn, isPetLoggedOut, (req, res) => {
+router.get('/new-pet', isLoggedIn, isPetLoggedOut, roleCheck('OWNER'), (req, res) => {
 	if (req.session.pet) {
 		delete req.session.pet;
 	}
