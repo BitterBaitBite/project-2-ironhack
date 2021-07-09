@@ -50,7 +50,6 @@ router.get('/:id', isLoggedIn, isPetLoggedIn, (req, res) => {
 		})
 		.then((pet) => {
 			const rating = calcRating(pet.reviews);
-			console.log(rating);
 
 			res.render('pets/pet-details', {
 				pet,
@@ -150,59 +149,53 @@ router.post('/:id/review', isLoggedIn, isPetLoggedIn, roleCheck('OWNER', 'MODERA
 });
 
 router.get('/:id/reviews', isLoggedIn, roleCheck('ADMIN', 'MODERATOR'), (req, res) => {
-	const { id } = req.params
+	const { id } = req.params;
 
-	Pet
-		.findById(id)
+	Pet.findById(id)
 		.populate('reviews')
-		.then(pet => {
-			res.render('pets/allReviews', { pet })
+		.then((pet) => {
+			res.render('pets/allReviews', { pet });
 		})
-		.catch(err => errorValidation(res, err))
-
-})
+		.catch((err) => errorValidation(res, err));
+});
 
 router.get('/:pet_id/reviews/:review_id', isLoggedIn, roleCheck('ADMIN', 'MODERATOR'), (req, res) => {
-	const { pet_id, review_id } = req.params
+	const { pet_id, review_id } = req.params;
 
-	Review
-		.findById(review_id)
+	Review.findById(review_id)
 		.populate('origin')
 		.populate({
 			path: 'destinatary',
 			select: 'name _id',
 		})
-		.then(review => {
-			res.render('pets/edit-review', { review })
+		.then((review) => {
+			res.render('pets/edit-review', { review });
 		})
-		.catch(err => errorValidation(res, err))
-})
+		.catch((err) => errorValidation(res, err));
+});
 
 router.post('/:pet_id/reviews/:review_id/edit', isLoggedIn, roleCheck('ADMIN', 'MODERATOR'), (req, res) => {
-	const { pet_id, review_id } = req.params
-	const { body } = req.body
+	const { pet_id, review_id } = req.params;
+	const { body } = req.body;
 
-	Review
-		.findByIdAndUpdate(review_id, { body })
-		.then(review => {
-			res.redirect(`/pets/${pet_id}/reviews`)
+	Review.findByIdAndUpdate(review_id, { body })
+		.then((review) => {
+			res.redirect(`/pets/${pet_id}/reviews`);
 		})
-		.catch(err => errorValidation(res, err))
-})
+		.catch((err) => errorValidation(res, err));
+});
 
 router.post('/:pet_id/reviews/:review_id/delete', isLoggedIn, roleCheck('ADMIN', 'MODERATOR'), (req, res) => {
-	const { pet_id, review_id } = req.params
+	const { pet_id, review_id } = req.params;
 
-	const reviewToDelete = Review.findByIdAndDelete(review_id)
-	const petReviewToDelete = Pet.findByIdAndUpdate(pet_id, { $pull: { reviews: review_id } }, { new: true })
+	const reviewToDelete = Review.findByIdAndDelete(review_id);
+	const petReviewToDelete = Pet.findByIdAndUpdate(pet_id, { $pull: { reviews: review_id } }, { new: true });
 
 	Promise.all([reviewToDelete, petReviewToDelete])
 		.then((review, pet) => {
-			res.redirect(`/pets/${pet_id}/reviews`)
+			res.redirect(`/pets/${pet_id}/reviews`);
 		})
-		.catch(err => errorValidation(res, err))
-})
-
-
+		.catch((err) => errorValidation(res, err));
+});
 
 module.exports = router;

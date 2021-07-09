@@ -1,6 +1,6 @@
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-const MONGO_URI = require('../utils/consts');
+const { MONGO_URI } = require('../utils/consts');
 
 module.exports = (app) => {
 	app.set('trust proxy', 1);

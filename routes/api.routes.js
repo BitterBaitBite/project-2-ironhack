@@ -1,7 +1,14 @@
+const router = require('express').Router();
 
+const { errorValidation } = require('../utils');
+const { MAPS_KEY } = require('../utils/consts');
 
+router.get('/key', (req, res) => {
+	try {
+		res.json(MAPS_KEY);
+	} catch (err) {
+		errorValidation(err);
+	}
+});
 
-
-
-// https://maps.googleapis.com/maps/api/geocode/json?address=1600+Amphitheatre+Parkway,
-// +Mountain + View, +CA & key={{MAPS_KEY}}
+module.exports = router;

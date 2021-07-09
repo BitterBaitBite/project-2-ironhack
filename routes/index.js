@@ -3,6 +3,7 @@ const { localsUpdate } = require('../middleware');
 module.exports = (app) => {
 	app.use('/', localsUpdate, require('./base.routes'));
 	app.use('/', localsUpdate, require('./auth.routes'));
+	app.use('/api', localsUpdate, require('./api.routes'));
 	app.use('/profile', localsUpdate, require('./user.routes'));
 	app.use('/pets', localsUpdate, require('./pets.routes'));
 	app.use('/events', localsUpdate, require('./events.routes'));

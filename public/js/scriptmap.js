@@ -1,3 +1,11 @@
+const { errorValidation } = require('../../utils');
+
+let MAPS_KEY;
+
+axios.get('/api/key').then((response) => {
+	MAPS_KEY = response.data;
+});
+
 function initMap() {
 	const elmLng = document.querySelector("input[name = 'latitude']");
 	const elmLat = document.querySelector("input[name = 'longitude']");
@@ -9,10 +17,8 @@ function initMap() {
 	});
 
 	google.maps.event.addListener(eventMap, 'click', function (event) {
-		console.log(eventMap);
 		let latitude = event.latLng.lat();
 		let longitude = event.latLng.lng();
-		console.log(latitude + ', ' + longitude);
 
 		marker && marker.setMap(null);
 
@@ -46,8 +52,6 @@ function initDetailsMap() {
 }
 
 function initGeocoderMap() {
-	const MAPS_KEY = 'AIzaSyAC99r-qOVPbcdsSvadRAx2k_6gcQj-MNk';
-
 	const inputs = document.querySelectorAll('.addressInput');
 
 	let location = { lat: 40.392499, lng: -3.698214 };
@@ -59,7 +63,6 @@ function initGeocoderMap() {
 	const fullStr = apiStr + addStr + keyStr;
 
 	axios.get(fullStr).then((response) => {
-		console.log(response);
 		if (response.data.results.length > 0) {
 			location = response.data.results[0].geometry.location;
 		}
@@ -98,8 +101,6 @@ function initGeocoderMap() {
 
 				const fullAddress = apiString + address + apiKey;
 
-				console.log(fullAddress);
-
 				axios
 					.get(fullAddress)
 					.then((response) => {
@@ -115,14 +116,12 @@ function initGeocoderMap() {
 							position: location,
 						});
 					})
-					.catch((err) => console.error(err));
+					.catch((err) => errorValidation(err));
 			})
 	);
 }
 
 initGeocoderDisMap = () => {
-	const MAPS_KEY = 'AIzaSyAC99r-qOVPbcdsSvadRAx2k_6gcQj-MNk';
-
 	const inputs = document.querySelectorAll('.addressInput');
 
 	let location = { lat: 40.392499, lng: -3.698214 };
@@ -150,5 +149,5 @@ initGeocoderDisMap = () => {
 				position: location,
 			});
 		})
-		.catch((err) => console.error(err));
+		.catch((err) => errorValidation(err));
 };

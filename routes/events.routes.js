@@ -15,7 +15,6 @@ const { errorValidation, dateFormat, hasRole, dateReverseFormat } = require('../
 router.get('/', isLoggedIn, isPetLoggedIn, (req, res) => {
 	let pet_id = undefined;
 	req.session.pet && (pet_id = req.session.pet._id);
-	// console.log(pet_id)
 
 	Event.find()
 		.then((events) => {
@@ -42,8 +41,6 @@ router.post('/add', isLoggedIn, isPetLoggedIn, roleCheck('OWNER'), (req, res) =>
 
 	const eventFullDate = [date, time].join('T');
 
-	console.log(typeof latitude, typeof longitude);
-
 	const latToNumber = Number(latitude);
 	const lngToNumber = Number(longitude);
 
@@ -65,7 +62,6 @@ router.post('/add', isLoggedIn, isPetLoggedIn, roleCheck('OWNER'), (req, res) =>
 
 router.get('/:event_id', isLoggedIn, isPetLoggedIn, (req, res) => {
 	const { event_id } = req.params;
-	// console.log(event_id)
 	let pet_id = undefined;
 	req.session.pet && (pet_id = req.session.pet._id);
 
@@ -73,12 +69,8 @@ router.get('/:event_id', isLoggedIn, isPetLoggedIn, (req, res) => {
 		.populate('creator')
 		.populate('participants')
 		.then((event) => {
-			console.log(event);
-
 			const isOwner = req.session.pet && event.creator.equals(req.session.pet._id);
 			const isEnroled = event.participants.some((pet) => pet._id == pet_id);
-
-			console.log(isOwner);
 
 			res.render('events/event-details', {
 				isOwner,
@@ -101,7 +93,7 @@ router.get('/:event_id/edit', isLoggedIn, isPetLoggedIn, (req, res) => {
 			const fixedDate = dateFormat(event.eventDate);
 			res.render('events/edit-event', { event, fixedDate });
 		})
-		.catch((err) => console.log(err));
+		.catch((err) => errorValidation(err));
 });
 
 router.post('/:event_id/edit', isLoggedIn, isPetLoggedIn, (req, res) => {
@@ -123,7 +115,7 @@ router.post('/:event_id/edit', isLoggedIn, isPetLoggedIn, (req, res) => {
 		{ new: true }
 	)
 		.then((event) => res.redirect(`/events/${event_id}`))
-		.catch((err) => console.log(err));
+		.catch((err) => errorValidation(err));
 });
 
 router.post('/:event_id/join', isLoggedIn, isPetLoggedIn, roleCheck('OWNER'), (req, res) => {
