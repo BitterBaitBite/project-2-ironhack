@@ -13,8 +13,8 @@ const { isLoggedIn, isPetLoggedIn, isPetLoggedOut, roleCheck } = require('../mid
 const { errorValidation, dateFormat, hasRole, dateReverseFormat } = require('../utils/');
 
 router.get('/', isLoggedIn, isPetLoggedIn, (req, res) => {
-	const pet_id = undefined
-	req.session.pet && (pet_id = req.session.pet._id)
+	let pet_id = undefined;
+	req.session.pet && (pet_id = req.session.pet._id);
 	// console.log(pet_id)
 
 	Event.find()
@@ -25,12 +25,10 @@ router.get('/', isLoggedIn, isPetLoggedIn, (req, res) => {
 });
 
 router.get('/add', isLoggedIn, isPetLoggedIn, roleCheck('OWNER'), (req, res) => {
-
 	// REVISAR ZONA HORARIA Y FORMATO
-	const dateUnix = new Date(Date.now())
+	const dateUnix = new Date(Date.now());
 
-
-	const { date, time } = dateFormat(dateUnix)
+	const { date, time } = dateFormat(dateUnix);
 
 	// let temp = new Date(Date.now().toLocaleString(undefined, { timeZone: 'UTC' }).split(','));
 	// const time = temp[1];
@@ -44,12 +42,10 @@ router.post('/add', isLoggedIn, isPetLoggedIn, roleCheck('OWNER'), (req, res) =>
 
 	const eventFullDate = [date, time].join('T');
 
+	console.log(typeof latitude, typeof longitude);
 
-	console.log(typeof latitude, typeof longitude)
-
-	const latToNumber = Number(latitude)
-	const lngToNumber = Number(longitude)
-
+	const latToNumber = Number(latitude);
+	const lngToNumber = Number(longitude);
 
 	Event.create({
 		creator: req.session.pet._id,
@@ -60,8 +56,8 @@ router.post('/add', isLoggedIn, isPetLoggedIn, roleCheck('OWNER'), (req, res) =>
 		eventDate: eventFullDate,
 		location: {
 			type: 'Point',
-			coordinates: [latitude, longitude]
-		}
+			coordinates: [latitude, longitude],
+		},
 	})
 		.then((event) => res.redirect(`/events/${event._id}`))
 		.catch((err) => errorValidation(res, err));
@@ -70,61 +66,65 @@ router.post('/add', isLoggedIn, isPetLoggedIn, roleCheck('OWNER'), (req, res) =>
 router.get('/:event_id', isLoggedIn, isPetLoggedIn, (req, res) => {
 	const { event_id } = req.params;
 	// console.log(event_id)
-	const pet_id = undefined
-	req.session.pet && (pet_id = req.session.pet._id)
+	let pet_id = undefined;
+	req.session.pet && (pet_id = req.session.pet._id);
 
 	Event.findById(event_id)
 		.populate('creator')
 		.populate('participants')
 		.then((event) => {
-			console.log((event))
+			console.log(event);
 
-			const isOwner = hasRole(req.session.user, 'OWNER') && event.creator == pet_id
+			const isOwner = req.session.pet && event.creator == req.session.pet._id;
 			const isEnroled = event.participants.some((pet) => pet._id == pet_id);
-			res.render('events/event-details', { isOwner, event, isEnroled, pet_id, isMod: hasRole(req.session.user, 'ADMIN', 'MODERATOR'), event_id });
+
+			console.log(isOwner);
+
+			res.render('events/event-details', {
+				isOwner,
+				event,
+				isEnroled,
+				pet_id,
+				isMod: hasRole(req.session.user, 'ADMIN', 'MODERATOR'),
+				event_id,
+			});
 		})
 		.catch((err) => errorValidation(res, err));
 });
 
-
 router.get('/:event_id/edit', isLoggedIn, isPetLoggedIn, (req, res) => {
+	const { event_id } = req.params;
 
-	const { event_id } = req.params
-
-	Event
-		.findById(event_id)
+	Event.findById(event_id)
 		.then((event) => {
 			// const isOwner = hasRole('OWNER') && event.creator == req.session.pet._id
-			const fixedDate = dateFormat(event.eventDate)
-			res.render('events/edit-event', { event, fixedDate })
-
+			const fixedDate = dateFormat(event.eventDate);
+			res.render('events/edit-event', { event, fixedDate });
 		})
-		.catch(err => console.log(err))
-}
-)
+		.catch((err) => console.log(err));
+});
 
 router.post('/:event_id/edit', isLoggedIn, isPetLoggedIn, (req, res) => {
+	const { eventDate: date, eventTime, activity, description, latitude, longitude } = req.body;
+	const { event_id } = req.params;
+	const fixedDate = dateReverseFormat(date, eventTime);
 
-
-	const { eventDate: date, eventTime, activity, description, latitude, longitude } = req.body
-	const { event_id } = req.params
-	const fixedDate = dateReverseFormat(date, eventTime)
-
-	Event
-
-		.findByIdAndUpdate(event_id, {
+	Event.findByIdAndUpdate(
+		event_id,
+		{
 			eventDate: fixedDate,
 			activity,
 			description,
 			location: {
 				type: 'Point',
-				coordinates: [latitude, longitude]
-			}
-		}, { new: true })
+				coordinates: [latitude, longitude],
+			},
+		},
+		{ new: true }
+	)
 		.then((event) => res.redirect(`/events/${event_id}`))
-		.catch(err => console.log(err))
-})
-
+		.catch((err) => console.log(err));
+});
 
 router.post('/:event_id/join', isLoggedIn, isPetLoggedIn, roleCheck('OWNER'), (req, res) => {
 	const { event_id } = req.params;
@@ -161,9 +161,5 @@ router.post('/:event_id/quit', isLoggedIn, isPetLoggedIn, (req, res) => {
 		.then(() => res.redirect(`/events/${event_id}`))
 		.catch((err) => errorValidation(res, err));
 });
-
-
-
-
 
 module.exports = router;
